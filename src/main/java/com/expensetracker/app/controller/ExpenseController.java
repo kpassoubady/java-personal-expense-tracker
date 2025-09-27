@@ -1,5 +1,6 @@
 package com.expensetracker.app.controller;
 
+import com.expensetracker.app.config.TemplateConfig;
 import com.expensetracker.app.entity.Category;
 import com.expensetracker.app.entity.Expense;
 import com.expensetracker.app.service.CategoryService;
@@ -35,6 +36,9 @@ public class ExpenseController {
 
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private TemplateConfig templateConfig;
 
     /**
      * Display all expenses with optional filtering.
@@ -89,7 +93,7 @@ public class ExpenseController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("search", search);
 
-        return "expenses/list";
+        return "expenses/list" + templateConfig.getTemplateSuffix();
     }
 
     /**
@@ -107,7 +111,7 @@ public class ExpenseController {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("pageTitle", "Add New Expense");
         model.addAttribute("formAction", "/expenses");
-        return "expenses/form";
+        return "expenses/form" + templateConfig.getTemplateSuffix();
     }
 
     /**
@@ -126,7 +130,7 @@ public class ExpenseController {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Edit Expense");
             model.addAttribute("formAction", "/expenses/" + id);
-            return "expenses/form";
+            return "expenses/form" + templateConfig.getTemplateSuffix();
         } else {
             redirectAttributes.addFlashAttribute("error", "Expense not found");
             return "redirect:/expenses";
@@ -151,7 +155,7 @@ public class ExpenseController {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Add New Expense");
             model.addAttribute("formAction", "/expenses");
-            return "expenses/form";
+            return "expenses/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
@@ -163,7 +167,7 @@ public class ExpenseController {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Add New Expense");
             model.addAttribute("formAction", "/expenses");
-            return "expenses/form";
+            return "expenses/form" + templateConfig.getTemplateSuffix();
         }
     }
 
@@ -187,7 +191,7 @@ public class ExpenseController {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Edit Expense");
             model.addAttribute("formAction", "/expenses/" + id);
-            return "expenses/form";
+            return "expenses/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
@@ -200,7 +204,7 @@ public class ExpenseController {
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Edit Expense");
             model.addAttribute("formAction", "/expenses/" + id);
-            return "expenses/form";
+            return "expenses/form" + templateConfig.getTemplateSuffix();
         }
     }
 

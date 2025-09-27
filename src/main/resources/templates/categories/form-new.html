@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout(~{::title}, ~{::head}, ~{::content})}">
+
+<head>
+    <title th:text="${category.id != null} ? 'Edit Category | Expense Tracker' : 'New Category | Expense Tracker'">
+        New Category | Expense Tracker
+    </title>
+    <style>
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .color-preset {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .color-preset:hover {
+            transform: scale(1.1);
+            border-color: rgba(0,0,0,0.2);
+        }
+        .color-preset.selected {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25);
+        }
+        .color-preset::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .color-preset.selected::after {
+            opacity: 1;
+        }
+        .icon-selection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+            padding: 1rem;
+        }
+        .icon-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .icon-option:hover {
+            background-color: var(--bs-light);
+            border-color: var(--bs-border-color);
+        }
+        .icon-option.selected {
+            background-color: var(--bs-primary);
+            color: white;
+            border-color: var(--bs-primary);
+        }
+        .icon-preview-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .icon-preview-large::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(-45deg);
+            animation: shine 2s infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+            50% { transform: translateX(100%) translateY(100%) rotate(-45deg); }
+            100% { transform: translateX(-100%) translateY(-100%) rotate(-45deg); }
+        }
+        .validation-feedback {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-floating label {
+            transition: all 0.2s ease;
+        }
+        .preview-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 2px dashed var(--bs-border-color);
+            transition: all 0.3s ease;
+        }
+        .preview-card.has-data {
+            background: white;
+            border: 2px solid var(--bs-primary);
+            box-shadow: 0 4px 20px rgba(var(--bs-primary-rgb), 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div th:fragment="content" class="container-fluid">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/}" class="text-decoration-none">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/categories}" class="text-decoration-none">Categories</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" 
+                    th:text="${category.id != null} ? 'Edit Category' : 'New Category'">
+                    New Category
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h2 class="mb-0">
+                    <i th:class="${category.id != null} ? 'fas fa-edit text-primary me-2' : 'fas fa-plus text-primary me-2'"></i>
+                    <span th:text="${category.id != null} ? 'Edit Category' : 'Create New Category'">Create New Category</span>
+                </h2>
+                <p class="text-muted mb-0" th:text="${category.id != null} ? 'Update category information and settings' : 'Add a new expense category with custom colors and icons'">
+                    Add a new expense category
+                </p>
+            </div>
+            <div class="col-auto">
+                <a th:href="@{/categories}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Categories
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Form Column -->
+            <div class="col-lg-8">
+                <form th:action="@{${category.id != null ? '/categories/' + category.id : '/categories'}}" 
+                      th:object="${category}" method="post" id="categoryForm" novalidate>
+                    <input type="hidden" name="_method" th:value="${category.id != null ? 'PUT' : 'POST'}">
+                    
+                    <!-- Basic Information Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white border-0">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Basic Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Category Name -->
+                            <div class="form-floating mb-3">
+                                <input type="text" 
+                                       class="form-control" 
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                       id="name" 
+                                       th:field="*{name}" 
+                                       placeholder="Category Name"
+                                       required
+                                       maxlength="100">
+                                <label for="name">
+                                    Category Name <span class="text-danger">*</span>
+                                </label>
+                                <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback validation-feedback">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    <span th:errors="*{name}">Name error</span>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-lightbulb me-1 text-warning"></i>
+                                    Choose a unique, descriptive name (e.g., "Food & Dining", "Transportation")
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" 
+                                          th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"
+                                          id="description" 
+                                          th:field="*{description}" 
+                                          placeholder="Category Description"
+                                          style="height: 100px"
+                                          maxlength="255"></textarea>
+                                <label for="description">Description (Optional)</label>
+                                <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback validation-feedback">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    <span th:errors="*{description}">Description error</span>
+                    </div>
+
+                    <!-- Color Selection Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-success text-white border-0">
+                            <h5 class="mb-0">
+                                <i class="fas fa-palette me-2"></i>
+                                Color Selection
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label class="form-label">Choose Category Color</label>
+                                    <input type="color" 
+                                           class="form-control form-control-color d-none" 
+                                           th:classappend="${#fields.hasErrors('color')} ? 'is-invalid' : ''"
+                                           id="color" 
+                                           th:field="*{color}" 
+                                           th:value="${category.color ?: '#007bff'}">
+                                    
+                                    <!-- Color Presets -->
+                                    <div class="color-picker-wrapper mb-3">
+                                        <div class="color-preset" style="background-color: #007bff;" data-color="#007bff" title="Blue"></div>
+                                        <div class="color-preset" style="background-color: #28a745;" data-color="#28a745" title="Green"></div>
+                                        <div class="color-preset" style="background-color: #dc3545;" data-color="#dc3545" title="Red"></div>
+                                        <div class="color-preset" style="background-color: #ffc107;" data-color="#ffc107" title="Yellow"></div>
+                                        <div class="color-preset" style="background-color: #17a2b8;" data-color="#17a2b8" title="Cyan"></div>
+                                        <div class="color-preset" style="background-color: #6f42c1;" data-color="#6f42c1" title="Purple"></div>
+                                        <div class="color-preset" style="background-color: #e83e8c;" data-color="#e83e8c" title="Pink"></div>
+                                        <div class="color-preset" style="background-color: #fd7e14;" data-color="#fd7e14" title="Orange"></div>
+                                        <div class="color-preset" style="background-color: #20c997;" data-color="#20c997" title="Teal"></div>
+                                        <div class="color-preset" style="background-color: #6c757d;" data-color="#6c757d" title="Gray"></div>
+                                        <div class="color-preset" style="background-color: #343a40;" data-color="#343a40" title="Dark"></div>
+                                        <div class="color-preset" style="background-color: #f8d7da;" data-color="#f8d7da" title="Light Pink"></div>
+                                    </div>
+                                    
+                                    <div class="d-flex align-items-center gap-3">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="document.getElementById('color').click()">
+                                            <i class="fas fa-eyedropper me-1"></i>Custom Color
+                                        </button>
+                                        <span class="text-muted small">Current: <span id="currentColorText" th:text="${category.color ?: '#007bff'}">#007bff</span></span>
+                                    </div>
+                                    
+                                    <div th:if="${#fields.hasErrors('color')}" class="invalid-feedback d-block validation-feedback mt-2">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        <span th:errors="*{color}">Color error</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Icon Selection Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-info text-white border-0">
+                            <h5 class="mb-0">
+                                <i class="fas fa-icons me-2"></i>
+                                Icon Selection
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <input type="text" 
+                                   class="form-control d-none" 
+                                   th:classappend="${#fields.hasErrors('icon')} ? 'is-invalid' : ''"
+                                   id="icon" 
+                                   th:field="*{icon}" 
+                                   th:value="${category.icon ?: 'fas fa-tag'}">
+                            
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label class="form-label">Choose an Icon</label>
+                                    <div class="icon-selection-grid">
+                                        <!-- Common Category Icons -->
+                                        <div class="icon-option" data-icon="fas fa-utensils" title="Food & Dining">
+                                            <i class="fas fa-utensils fa-lg mb-2"></i>
+                                            <span class="small">Food</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-car" title="Transportation">
+                                            <i class="fas fa-car fa-lg mb-2"></i>
+                                            <span class="small">Transport</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-home" title="Home & Utilities">
+                                            <i class="fas fa-home fa-lg mb-2"></i>
+                                            <span class="small">Home</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-gamepad" title="Entertainment">
+                                            <i class="fas fa-gamepad fa-lg mb-2"></i>
+                                            <span class="small">Fun</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-heartbeat" title="Health & Medical">
+                                            <i class="fas fa-heartbeat fa-lg mb-2"></i>
+                                            <span class="small">Health</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-graduation-cap" title="Education">
+                                            <i class="fas fa-graduation-cap fa-lg mb-2"></i>
+                                            <span class="small">Education</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-shopping-bag" title="Shopping">
+                                            <i class="fas fa-shopping-bag fa-lg mb-2"></i>
+                                            <span class="small">Shopping</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-briefcase" title="Work & Business">
+                                            <i class="fas fa-briefcase fa-lg mb-2"></i>
+                                            <span class="small">Work</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-plane" title="Travel">
+                                            <i class="fas fa-plane fa-lg mb-2"></i>
+                                            <span class="small">Travel</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-gift" title="Gifts">
+                                            <i class="fas fa-gift fa-lg mb-2"></i>
+                                            <span class="small">Gifts</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-paw" title="Pets">
+                                            <i class="fas fa-paw fa-lg mb-2"></i>
+                                            <span class="small">Pets</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-dumbbell" title="Fitness">
+                                            <i class="fas fa-dumbbell fa-lg mb-2"></i>
+                                            <span class="small">Fitness</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-book" title="Books">
+                                            <i class="fas fa-book fa-lg mb-2"></i>
+                                            <span class="small">Books</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-music" title="Music">
+                                            <i class="fas fa-music fa-lg mb-2"></i>
+                                            <span class="small">Music</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-camera" title="Photography">
+                                            <i class="fas fa-camera fa-lg mb-2"></i>
+                                            <span class="small">Photo</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-coffee" title="Coffee & Drinks">
+                                            <i class="fas fa-coffee fa-lg mb-2"></i>
+                                            <span class="small">Coffee</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-tools" title="Tools & Maintenance">
+                                            <i class="fas fa-tools fa-lg mb-2"></i>
+                                            <span class="small">Tools</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-leaf" title="Environment">
+                                            <i class="fas fa-leaf fa-lg mb-2"></i>
+                                            <span class="small">Green</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-tag" title="General">
+                                            <i class="fas fa-tag fa-lg mb-2"></i>
+                                            <span class="small">General</span>
+                                        </div>
+                                        <div class="icon-option" data-icon="fas fa-star" title="Favorites">
+                                            <i class="fas fa-star fa-lg mb-2"></i>
+                                            <span class="small">Star</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Custom Icon</label>
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="customIcon" 
+                                               placeholder="fas fa-tag">
+                                        <label for="customIcon">Font Awesome Class</label>
+                                    </div>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1 text-info"></i>
+                                        Enter Font Awesome class (e.g., "fas fa-star")
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div th:if="${#fields.hasErrors('icon')}" class="invalid-feedback d-block validation-feedback mt-2">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                <span th:errors="*{icon}">Icon error</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <button type="submit" class="btn btn-primary btn-lg me-3" id="submitBtn">
+                                        <i class="fas fa-save me-2"></i>
+                                        <span th:text="${category.id != null ? 'Update Category' : 'Create Category'}">Create Category</span>
+                                    </button>
+                                    <a th:href="@{/categories}" class="btn btn-outline-secondary btn-lg">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                </div>
+                                <div th:if="${category.id != null}">
+                                    <button type="button" 
+                                            class="btn btn-outline-danger btn-lg" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal">
+                                        <i class="fas fa-trash me-2"></i>Delete Category
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preview Column -->
+            <div class="col-lg-4">
+                <!-- Real-time Preview Card -->
+                <div class="card border-0 shadow-sm mb-4 preview-card" id="previewCard">
+                    <div class="card-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye me-2"></i>
+                            Live Preview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Preview Header -->
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="icon-preview-large me-3" id="previewIconContainer">
+                                <i id="previewIcon" class="fas fa-tag"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 fw-bold" id="previewName">Category Name</h5>
+                                <p class="text-muted small mb-2" id="previewDescription">Category description will appear here...</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-preview me-2" 
+                                         id="previewColorSwatch" 
+                                         style="width: 16px; height: 16px; border-radius: 50%; background-color: #007bff; border: 2px solid rgba(0,0,0,0.1);"></div>
+                                    <small class="text-muted" id="previewColorCode">#007bff</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mock Statistics -->
+                        <div class="border-top pt-3">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="text-muted small">Expenses</div>
+                                    <div class="fw-bold" th:text="${category.expenses != null ? #lists.size(category.expenses) : 0}">0</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small">Total Amount</div>
+                                    <div class="fw-bold">$0.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-warning text-dark border-0">
+                        <h6 class="mb-0">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            Category Creation Tips
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled small mb-0">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Use specific, descriptive names (e.g., "Groceries" vs "Food")
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Choose colors that create visual distinction
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Select icons that immediately convey the category type
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                Add helpful descriptions for clarity
+                            </li>
+                            <li class="mb-0">
+                                <i class="fas fa-info-circle text-primary me-2"></i>
+                                Categories can be edited later if needed
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" th:if="${category.id != null}">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-0 bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Delete Category
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-danger border-0">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-warning me-1"></i>
+                                This action cannot be undone!
+                            </h6>
+                            <p class="mb-0">
+                                Deleting this category will also remove all associated expenses. 
+                                Are you sure you want to proceed?
+                            </p>
+                        </div>
+                        <div class="category-info p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="rounded-3 p-2 d-flex align-items-center justify-content-center"
+                                         th:style="'background-color: ' + ${category.color} + '20; width: 40px; height: 40px;'">
+                                        <i th:class="${category.icon} + ' fs-5'" th:style="'color: ' + ${category.color}"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1" th:text="${category.name}">Category Name</h6>
+                                    <small class="text-muted">
+                                        <span th:text="${category.expenses != null ? #lists.size(category.expenses) : 0}">0</span> expenses will be deleted
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>Cancel
+                        </button>
+                        <form th:action="@{'/categories/' + ${category.id}}" method="post" style="display: inline;">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Delete Category
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const nameInput = document.getElementById('name');
+                const descriptionInput = document.getElementById('description');
+                const colorInput = document.getElementById('color');
+                const iconInput = document.getElementById('icon');
+                const customIconInput = document.getElementById('customIcon');
+                
+                // Real-time preview updates
+                function updatePreview() {
+                    const name = nameInput.value || 'Category Name';
+                    const description = descriptionInput.value || 'Category description will appear here...';
+                    const color = colorInput.value || '#007bff';
+                    const icon = iconInput.value || 'fas fa-tag';
+                    
+                    // Update preview elements
+                    document.getElementById('previewName').textContent = name;
+                    document.getElementById('previewDescription').textContent = description;
+                    document.getElementById('previewIcon').className = icon;
+                    document.getElementById('previewIconContainer').style.background = `linear-gradient(135deg, ${color}, ${adjustColor(color, -20)})`;
+                    document.getElementById('previewColorSwatch').style.backgroundColor = color;
+                    document.getElementById('previewColorCode').textContent = color;
+                    document.getElementById('currentColorText').textContent = color;
+                    
+                    // Update preview card state
+                    const hasData = name !== 'Category Name' || description !== 'Category description will appear here...';
+                    document.getElementById('previewCard').classList.toggle('has-data', hasData);
+                }
+                
+                // Color adjustment helper
+                function adjustColor(color, amount) {
+                    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+                }
+                
+                // Color preset selection
+                document.querySelectorAll('.color-preset').forEach(preset => {
+                    preset.addEventListener('click', function() {
+                        const color = this.getAttribute('data-color');
+                        colorInput.value = color;
+                        
+                        // Update selected state
+                        document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        updatePreview();
+                    });
+                });
+                
+                // Icon selection
+                document.querySelectorAll('.icon-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const icon = this.getAttribute('data-icon');
+                        iconInput.value = icon;
+                        customIconInput.value = icon;
+                        
+                        // Update selected state
+                        document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        updatePreview();
+                    });
+                });
+                
+                // Custom icon input
+                customIconInput.addEventListener('input', function() {
+                    iconInput.value = this.value;
+                    
+                    // Clear icon selection
+                    document.querySelectorAll('.icon-option').forEach(o => o.classList.remove('selected'));
+                    
+                    updatePreview();
+                });
+                
+                // Custom color picker
+                colorInput.addEventListener('change', function() {
+                    // Clear color presets
+                    document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+                    updatePreview();
+                });
+                
+                // Input event listeners
+                nameInput.addEventListener('input', updatePreview);
+                descriptionInput.addEventListener('input', updatePreview);
+                
+                // Character counter for description
+                descriptionInput.addEventListener('input', function() {
+                    const counter = document.getElementById('descriptionCounter');
+                    if (counter) {
+                        counter.textContent = `${this.value.length} / 255 characters`;
+                    }
+                });
+                
+                // Form validation
+                document.getElementById('categoryForm').addEventListener('submit', function(e) {
+                    const name = nameInput.value.trim();
+                    if (!name) {
+                        e.preventDefault();
+                        nameInput.focus();
+                        nameInput.classList.add('is-invalid');
+                        
+                        // Show error message
+                        let errorDiv = nameInput.parentNode.querySelector('.invalid-feedback');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback validation-feedback';
+                            errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Category name is required';
+                            nameInput.parentNode.appendChild(errorDiv);
+                        }
+                        errorDiv.style.display = 'block';
+                    }
+                });
+                
+                // Remove validation error on input
+                nameInput.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                    const errorDiv = this.parentNode.querySelector('.invalid-feedback');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                    }
+                });
+                
+                // Initialize preview with existing values
+                updatePreview();
+                
+                // Set initial selections based on existing values
+                if (colorInput.value) {
+                    const matchingPreset = document.querySelector(`[data-color="${colorInput.value}"]`);
+                    if (matchingPreset) {
+                        matchingPreset.classList.add('selected');
+                    }
+                }
+                
+                if (iconInput.value) {
+                    const matchingIcon = document.querySelector(`[data-icon="${iconInput.value}"]`);
+                    if (matchingIcon) {
+                        matchingIcon.classList.add('selected');
+                    }
+                    customIconInput.value = iconInput.value;
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>
