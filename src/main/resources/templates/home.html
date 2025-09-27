@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Expense Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .expense-amount {
+            font-weight: bold;
+        }
+        .category-color {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .alert-dismissible .btn-close {
+            padding: 0.75rem 1.25rem;
+        }
+        .table th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-wallet me-2"></i>Expense Tracker
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" th:href="@{/}">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/expenses}">
+                            <i class="fas fa-receipt me-1"></i>Expenses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories}">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 mb-3">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h1>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Expenses</h6>
+                            <h4 th:text="${totalExpenses != null ? '$' + #numbers.formatDecimal(totalExpenses, 1, 2) : '$0.00'}">$0.00</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Total Records</h6>
+                            <h4 th:text="${expenseCount ?: 0}">0</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-receipt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">Categories</h6>
+                            <h4 th:text="${categoryCount ?: 0}">0</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-tags fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">This Month</h6>
+                            <h4>$0.00</h4>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-calendar-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Expenses and Category Summary -->
+    <div class="row">
+        <!-- Recent Expenses -->
+        <div class="col-lg-8 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Recent Expenses
+                    </h5>
+                    <a th:href="@{/expenses}" class="btn btn-outline-primary btn-sm">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div th:if="${recentExpenses != null and !#lists.isEmpty(recentExpenses)}">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="expense : ${recentExpenses}">
+                                        <td th:text="${#temporals.format(expense.expenseDate, 'MMM dd')}">Jan 01</td>
+                                        <td th:text="${expense.description}">Sample expense</td>
+                                        <td>
+                                            <span th:if="${expense.category != null}" 
+                                                  class="category-color" 
+                                                  th:style="'background-color: ' + ${expense.category.color}"></span>
+                                            <span th:text="${expense.category?.name ?: 'No Category'}">Food</span>
+                                        </td>
+                                        <td class="text-end expense-amount" 
+                                            th:text="'$' + ${#numbers.formatDecimal(expense.amount, 1, 2)}">$0.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div th:if="${recentExpenses == null or #lists.isEmpty(recentExpenses)}" class="text-center py-4">
+                        <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No expenses found. <a th:href="@{/expenses/new}">Add your first expense</a>!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Summary -->
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Spending by Category
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div th:if="${categorySummary != null and !#maps.isEmpty(categorySummary)}">
+                        <div th:each="entry : ${categorySummary}" class="d-flex justify-content-between align-items-center mb-2">
+                            <span th:text="${entry.key}">Category</span>
+                            <span class="expense-amount" th:text="'$' + ${#numbers.formatDecimal(entry.value, 1, 2)}">$0.00</span>
+                        </div>
+                    </div>
+                    <div th:if="${categorySummary == null or #maps.isEmpty(categorySummary)}" class="text-center py-3">
+                        <i class="fas fa-chart-pie fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a th:href="@{/expenses/new}" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-plus me-2"></i>Add New Expense
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a th:href="@{/categories/new}" class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="fas fa-tag me-2"></i>Add Category
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+</body>
+</html>

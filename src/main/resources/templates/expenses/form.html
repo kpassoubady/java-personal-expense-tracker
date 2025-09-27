@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle + ' - Expense Tracker'}">Add Expense - Expense Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand { font-weight: bold; }
+        .card-header { background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+        .category-color { width: 20px; height: 20px; display: inline-block; border-radius: 50%; margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}"><i class="fas fa-wallet me-2"></i>Expense Tracker</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}"><i class="fas fa-home me-1"></i>Dashboard</a>
+                <a class="nav-link active" th:href="@{/expenses}"><i class="fas fa-receipt me-1"></i>Expenses</a>
+                <a class="nav-link" th:href="@{/categories}"><i class="fas fa-tags me-1"></i>Categories</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show"><i class="fas fa-check-circle me-2"></i><span th:text="${success}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show"><i class="fas fa-exclamation-circle me-2"></i><span th:text="${error}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h1 class="h2 mb-3" th:text="${pageTitle}">Add New Expense</h1>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a th:href="@{/expenses}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Expenses
+            </a>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>Expense Details
+            </h5>
+        </div>
+        <div class="card-body">
+            <form th:action="${formAction}" th:object="${expense}" method="post">
+                <!-- Description Field -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">
+                        Description <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" 
+                           class="form-control" 
+                           th:class="${#fields.hasErrors('description')} ? 'form-control is-invalid' : 'form-control'"
+                           id="description" 
+                           th:field="*{description}" 
+                           placeholder="Enter expense description (e.g., Lunch at restaurant)"
+                           required>
+                    <div th:if="${#fields.hasErrors('description')}" class="invalid-feedback">
+                        <span th:errors="*{description}">Description error</span>
+                    </div>
+                    <div class="form-text">Provide a clear description of what this expense was for.</div>
+                </div>
+
+                <!-- Amount Field -->
+                <div class="mb-3">
+                    <label for="amount" class="form-label">
+                        Amount <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" 
+                               class="form-control" 
+                               th:class="${#fields.hasErrors('amount')} ? 'form-control is-invalid' : 'form-control'"
+                               id="amount" 
+                               th:field="*{amount}" 
+                               step="0.01" 
+                               min="0.01" 
+                               placeholder="0.00"
+                               required>
+                        <div th:if="${#fields.hasErrors('amount')}" class="invalid-feedback">
+                            <span th:errors="*{amount}">Amount error</span>
+                        </div>
+                    </div>
+                    <div class="form-text">Enter the expense amount in dollars and cents.</div>
+                </div>
+
+                <!-- Expense Date Field -->
+                <div class="mb-3">
+                    <label for="expenseDate" class="form-label">
+                        Expense Date <span class="text-danger">*</span>
+                    </label>
+                    <input type="date" 
+                           class="form-control" 
+                           th:class="${#fields.hasErrors('expenseDate')} ? 'form-control is-invalid' : 'form-control'"
+                           id="expenseDate" 
+                           th:field="*{expenseDate}" 
+                           required>
+                    <div th:if="${#fields.hasErrors('expenseDate')}" class="invalid-feedback">
+                        <span th:errors="*{expenseDate}">Date error</span>
+                    </div>
+                    <div class="form-text">Select the date when this expense occurred.</div>
+                </div>
+
+                <!-- Category Field -->
+                <div class="mb-3">
+                    <label for="category" class="form-label">
+                        Category <span class="text-danger">*</span>
+                    </label>
+                    <div class="d-flex">
+                        <select class="form-select me-2" 
+                                th:class="${#fields.hasErrors('category')} ? 'form-select is-invalid' : 'form-select'"
+                                id="category" 
+                                th:field="*{category}" 
+                                required>
+                            <option value="">Select a category...</option>
+                            <option th:each="category : ${categories}" 
+                                    th:value="${category.id}" 
+                                    th:text="${category.name}"
+                                    th:data-color="${category.color}">
+                                Category Name
+                            </option>
+                        </select>
+                        <a th:href="@{/categories/new}" class="btn btn-outline-secondary" target="_blank">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                    <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">
+                        <span th:errors="*{category}">Category error</span>
+                    </div>
+                    <div class="form-text">Choose the category that best describes this expense.</div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            <span th:text="${expense.id != null ? 'Update Expense' : 'Save Expense'}">Save Expense</span>
+                        </button>
+                        <a th:href="@{/expenses}" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                    <div class="col-md-6 text-md-end" th:if="${expense.id != null}">
+                        <button type="button" 
+                                class="btn btn-outline-danger" 
+                                onclick="confirmDelete()"
+                                th:data-id="${expense.id}"
+                                th:data-description="${expense.description}">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preview Card (when editing) -->
+    <div th:if="${expense.id != null}" class="card mt-4">
+        <div class="card-header">
+            <h6 class="mb-0">
+                <i class="fas fa-eye me-2"></i>Current Expense Details
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Created:</strong><br>
+                    <span th:text="${#temporals.format(expense.createdAt, 'MMM dd, yyyy HH:mm')}" 
+                          class="text-muted">Jan 01, 2024 10:00</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Last Updated:</strong><br>
+                    <span th:text="${#temporals.format(expense.updatedAt, 'MMM dd, yyyy HH:mm')}" 
+                          class="text-muted">Jan 01, 2024 10:00</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>ID:</strong><br>
+                    <span th:text="${expense.id}" class="text-muted">#123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" th:if="${expense.id != null}">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-trash me-2"></i>Confirm Delete
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this expense?</p>
+                    <div class="alert alert-warning">
+                        <strong>Description:</strong> <span th:text="${expense.description}">Sample expense</span><br>
+                        <strong>Amount:</strong> <span th:text="'$' + ${#numbers.formatDecimal(expense.amount, 1, 2)}">$0.00</span><br>
+                        <strong>Date:</strong> <span th:text="${#temporals.format(expense.expenseDate, 'MMM dd, yyyy')}">Jan 01, 2024</span>
+                    </div>
+                    <p class="text-muted">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{'/expenses/' + ${expense.id}}" method="post">
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('expenseDate');
+            if (dateInput && !dateInput.value) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            const categorySelect = document.getElementById('category');
+            categorySelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const color = selectedOption.dataset.color;
+                if (color) {
+                    this.style.borderLeft = '4px solid ' + color;
+                } else {
+                    this.style.borderLeft = '';
+                }
+            });
+            categorySelect.dispatchEvent(new Event('change'));
+        });
+        function confirmDelete() {
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+    </script>
+</body>
+</html>
