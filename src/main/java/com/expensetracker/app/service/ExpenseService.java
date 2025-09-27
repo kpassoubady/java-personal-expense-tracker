@@ -332,6 +332,40 @@ public class ExpenseService {
     }
 
     /**
+     * Get category summary for dashboard charts.
+     * 
+     * @return Map of category names to total amounts
+     */
+    @Transactional(readOnly = true)
+    public Map<String, BigDecimal> getCategorySummary() {
+        return getExpenseSummaryByCategory();
+    }
+
+    /**
+     * Calculate total amount within a date range.
+     * 
+     * @param startDate the start date (inclusive)
+     * @param endDate the end date (inclusive)
+     * @return the total amount for the date range
+     */
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalExpensesByDateRange(LocalDate startDate, LocalDate endDate) {
+        return getTotalByDateRange(startDate, endDate);
+    }
+
+    /**
+     * Count expenses within a date range.
+     * 
+     * @param startDate the start date (inclusive)
+     * @param endDate the end date (inclusive)
+     * @return the count of expenses within the date range
+     */
+    @Transactional(readOnly = true)
+    public long getExpenseCountByDateRange(LocalDate startDate, LocalDate endDate) {
+        return expenseRepository.countByExpenseDateBetween(startDate, endDate);
+    }
+
+    /**
      * Create sample expenses for demo purposes.
      * This method creates sample data if no expenses exist.
      */
@@ -392,7 +426,7 @@ public class ExpenseService {
         
         // Average expense
         BigDecimal averageExpense = totalCount > 0 
-            ? totalAmount.divide(BigDecimal.valueOf(totalCount), 2, BigDecimal.ROUND_HALF_UP)
+            ? totalAmount.divide(BigDecimal.valueOf(totalCount), 2, java.math.RoundingMode.HALF_UP)
             : BigDecimal.ZERO;
         analytics.put("averageExpense", averageExpense);
         
@@ -467,7 +501,7 @@ public class ExpenseService {
         
         if (!categoryExpenses.isEmpty()) {
             // Calculate average
-            BigDecimal average = totalAmount.divide(BigDecimal.valueOf(categoryExpenses.size()), 2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal average = totalAmount.divide(BigDecimal.valueOf(categoryExpenses.size()), 2, java.math.RoundingMode.HALF_UP);
             stats.put("averageAmount", average);
             
             // Find min and max

@@ -1,5 +1,6 @@
 package com.expensetracker.app.entity;
 
+import com.expensetracker.app.validation.PositiveAmount;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -26,7 +27,9 @@ public class Expense {
     private String description;
 
     @NotNull(message = "Amount is required")
-    @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
+    @PositiveAmount(message = "Amount must be greater than zero")
+    @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
+    @DecimalMax(value = "999999.99", message = "Amount cannot exceed 999,999.99")
     @Digits(integer = 10, fraction = 2, message = "Invalid amount format")
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;

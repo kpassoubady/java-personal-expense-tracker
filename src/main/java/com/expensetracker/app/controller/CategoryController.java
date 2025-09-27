@@ -1,8 +1,11 @@
 package com.expensetracker.app.controller;
 
+import com.expensetracker.app.config.TemplateConfig;
 import com.expensetracker.app.entity.Category;
 import com.expensetracker.app.service.CategoryService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +28,13 @@ import java.util.Optional;
 @RequestMapping("/categories")
 public class CategoryController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
+
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private TemplateConfig templateConfig;
 
     /**
      * Display all categories in a web page.
@@ -38,7 +47,21 @@ public class CategoryController {
         List<Category> categories = categoryService.getAllCategories();
         model.addAttribute("categories", categories);
         model.addAttribute("categoryCount", categoryService.getCategoryCount());
-        return "categories/list";
+        
+        // Additional data for new layout
+        if (templateConfig.isUseNewLayout()) {
+            // Calculate total expense count from categories
+            int totalExpenseCount = categories.stream().mapToInt(c -> c.getExpenses().size()).sum();
+            double totalAmount = categories.stream()
+                .flatMap(c -> c.getExpenses().stream())
+                .mapToDouble(e -> e.getAmount().doubleValue())
+                .sum();
+            
+            model.addAttribute("totalExpenseCount", totalExpenseCount);
+            model.addAttribute("totalAmount", totalAmount);
+        }
+        
+        return "categories/list" + templateConfig.getTemplateSuffix();
     }
 
     /**
@@ -52,7 +75,19 @@ public class CategoryController {
         model.addAttribute("category", new Category());
         model.addAttribute("pageTitle", "Add New Category");
         model.addAttribute("formAction", "/categories");
-        return "categories/form";
+        
+        // Additional data for new layout
+        if (templateConfig.isUseNewLayout()) {
+            model.addAttribute("iconOptions", getAvailableIcons());
+            model.addAttribute("colorOptions", getAvailableColors());
+            // Get recent categories (just first 5 categories for now)
+            List<Category> allCategories = categoryService.getAllCategories();
+            List<Category> recentCategories = allCategories.size() > 5 ? 
+                allCategories.subList(0, 5) : allCategories;
+            model.addAttribute("recentCategories", recentCategories);
+        }
+        
+        return "categories/form" + templateConfig.getTemplateSuffix();
     }
 
     /**
@@ -70,7 +105,19 @@ public class CategoryController {
             model.addAttribute("category", category.get());
             model.addAttribute("pageTitle", "Edit Category");
             model.addAttribute("formAction", "/categories/" + id);
-            return "categories/form";
+            
+            // Additional data for new layout
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                // Get recent categories (just first 5 categories for now)
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
         } else {
             redirectAttributes.addFlashAttribute("error", "Category not found");
             return "redirect:/categories";
@@ -91,21 +138,88 @@ public class CategoryController {
                                BindingResult bindingResult, 
                                Model model, 
                                RedirectAttributes redirectAttributes) {
+        
+        // Custom business rule validations
+        validateCategoryBusinessRules(category, bindingResult);
+        
         if (bindingResult.hasErrors()) {
+            logger.warn("Validation errors in category creation: {}", bindingResult.getErrorCount());
+            
             model.addAttribute("pageTitle", "Add New Category");
             model.addAttribute("formAction", "/categories");
-            return "categories/form";
+            model.addAttribute("error", "Please correct the errors below and try again.");
+            
+            // Additional data for new layout
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                // Get recent categories (just first 5 categories for now)
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
+            // Set default values if not provided
+            if (category.getColor() == null || category.getColor().trim().isEmpty()) {
+                category.setColor("#007bff");
+            }
+            if (category.getIcon() == null || category.getIcon().trim().isEmpty()) {
+                category.setIcon("fas fa-tag");
+            }
+            
             categoryService.saveCategory(category);
-            redirectAttributes.addFlashAttribute("success", "Category created successfully!");
+            
+            // Success message with category details
+            String successMessage = String.format(
+                "Category '%s' created successfully!", 
+                category.getName());
+            redirectAttributes.addFlashAttribute("success", successMessage);
+            
+            // PRG Pattern - Always redirect after successful POST
             return "redirect:/categories";
+            
         } catch (IllegalArgumentException e) {
+            logger.warn("Business rule violation in category creation: {}", e.getMessage());
+            
             model.addAttribute("error", e.getMessage());
             model.addAttribute("pageTitle", "Add New Category");
             model.addAttribute("formAction", "/categories");
-            return "categories/form";
+            
+            // Additional data for new layout
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                // Get recent categories (just first 5 categories for now)
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
+            
+        } catch (Exception e) {
+            logger.error("Unexpected error creating category", e);
+            
+            model.addAttribute("error", "An unexpected error occurred. Please try again.");
+            model.addAttribute("pageTitle", "Add New Category");
+            model.addAttribute("formAction", "/categories");
+            
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
         }
     }
 
@@ -128,7 +242,19 @@ public class CategoryController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pageTitle", "Edit Category");
             model.addAttribute("formAction", "/categories/" + id);
-            return "categories/form";
+            
+            // Additional data for new layout
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                // Get recent categories (just first 5 categories for now)
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
@@ -140,7 +266,19 @@ public class CategoryController {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("pageTitle", "Edit Category");
             model.addAttribute("formAction", "/categories/" + id);
-            return "categories/form";
+            
+            // Additional data for new layout
+            if (templateConfig.isUseNewLayout()) {
+                model.addAttribute("iconOptions", getAvailableIcons());
+                model.addAttribute("colorOptions", getAvailableColors());
+                // Get recent categories (just first 5 categories for now)
+                List<Category> allCategories = categoryService.getAllCategories();
+                List<Category> recentCategories = allCategories.size() > 5 ? 
+                    allCategories.subList(0, 5) : allCategories;
+                model.addAttribute("recentCategories", recentCategories);
+            }
+            
+            return "categories/form" + templateConfig.getTemplateSuffix();
         }
     }
 
@@ -260,6 +398,86 @@ public class CategoryController {
             }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    // Helper methods for new template system
+
+    /**
+     * Get available icons for category selection.
+     * 
+     * @return List of available FontAwesome icon classes
+     */
+    private List<String> getAvailableIcons() {
+        return Arrays.asList(
+            "fa-utensils", "fa-car", "fa-home", "fa-shopping-cart", "fa-gamepad",
+            "fa-film", "fa-dumbbell", "fa-heart", "fa-graduation-cap", "fa-briefcase",
+            "fa-plane", "fa-coffee", "fa-music", "fa-book", "fa-mobile-alt",
+            "fa-laptop", "fa-tshirt", "fa-gift", "fa-paw", "fa-tools",
+            "fa-medkit", "fa-bus", "fa-gas-pump", "fa-shopping-bag", "fa-camera",
+            "fa-wine-glass", "fa-pizza-slice", "fa-hamburger", "fa-ice-cream", "fa-birthday-cake"
+        );
+    }
+
+    /**
+     * Get available colors for category selection.
+     * 
+     * @return List of available hex color codes
+     */
+    private List<String> getAvailableColors() {
+        return Arrays.asList(
+            "#007bff", "#28a745", "#ffc107", "#dc3545", "#6c757d",
+            "#17a2b8", "#6f42c1", "#e83e8c", "#fd7e14", "#20c997",
+            "#495057", "#f8f9fa", "#343a40", "#ffffff", "#000000",
+            "#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24", "#f0932b",
+            "#eb4d4b", "#6c5ce7", "#a29bfe", "#fd79a8", "#e17055"
+        );
+    }
+
+    // Private Helper Methods
+
+    /**
+     * Validate business rules for category entities.
+     * 
+     * @param category the category to validate
+     * @param bindingResult the binding result to add errors to
+     */
+    private void validateCategoryBusinessRules(Category category, BindingResult bindingResult) {
+        // Business rule: Category name cannot be "Default" (reserved)
+        if (category.getName() != null && "default".equalsIgnoreCase(category.getName().trim())) {
+            bindingResult.rejectValue("name", "category.name.reserved", 
+                "Category name 'Default' is reserved and cannot be used");
+        }
+        
+        // Business rule: Category name cannot contain special characters except spaces and dashes
+        if (category.getName() != null && !category.getName().matches("^[a-zA-Z0-9\\s\\-]+$")) {
+            bindingResult.rejectValue("name", "category.name.invalidChars", 
+                "Category name can only contain letters, numbers, spaces, and dashes");
+        }
+        
+        // Business rule: Color must be a valid hex color (additional validation beyond @ValidColor)
+        if (category.getColor() != null && !category.getColor().isEmpty()) {
+            String color = category.getColor().trim();
+            if (!color.startsWith("#")) {
+                bindingResult.rejectValue("color", "category.color.invalidFormat", 
+                    "Color must start with # (e.g., #FF0000)");
+            }
+        }
+        
+        // Business rule: Icon must be from FontAwesome (basic validation)
+        if (category.getIcon() != null && !category.getIcon().isEmpty()) {
+            String icon = category.getIcon().trim();
+            if (!icon.startsWith("fa")) {
+                bindingResult.rejectValue("icon", "category.icon.invalidFormat", 
+                    "Icon must be a valid FontAwesome class (e.g., fas fa-tag)");
+            }
+        }
+        
+        // Business rule: Description cannot be the same as name
+        if (category.getName() != null && category.getDescription() != null &&
+            category.getName().equalsIgnoreCase(category.getDescription().trim())) {
+            bindingResult.rejectValue("description", "category.description.sameAsName", 
+                "Description should be different from the category name");
         }
     }
 }

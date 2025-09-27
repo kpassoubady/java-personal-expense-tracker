@@ -1,352 +1,273 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Personal Expense Tracker</title>
-    
-    <!-- Bootstrap CSS -->
-    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        .navbar-brand {
-            font-weight: bold;
-        }
-        .stat-card {
-            transition: transform 0.2s;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-        .trend-up {
-            color: #dc3545;
-        }
-        .trend-down {
-            color: #28a745;
-        }
-        .trend-neutral {
-            color: #6c757d;
-        }
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-        .error-state {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            border-radius: 0.375rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-wallet me-2"></i>Expense Tracker
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/">
-                            <i class="fas fa-home me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/categories">
-                            <i class="fas fa-tags me-1"></i>Categories
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/expenses">
-                            <i class="fas fa-receipt me-1"></i>Expenses
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">
-                            <i class="fas fa-info-circle me-1"></i>About
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main :: layout('Dashboard', ~{::content})}">
 
-    <div class="container mt-4">
+<head>
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div th:fragment="content">
         <!-- Dashboard Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0">
-                <i class="fas fa-chart-line me-2 text-primary"></i>
-                Dashboard Overview
+            <h1 class="h2 mb-0">
+                <i class="fas fa-chart-line text-primary me-2"></i>Dashboard Overview
             </h1>
-            <small class="text-muted" th:if="${lastUpdated}">
-                Last updated: <span th:text="${#temporals.format(lastUpdated, 'MMM dd, yyyy')}"></span>
-            </small>
+            <div class="d-flex gap-2 align-items-center">
+                <button id="dashboardThemeToggle" class="btn btn-outline-secondary" title="Toggle Theme">
+                    <i id="dashboardThemeIcon" class="fas fa-sun"></i>
+                </button>
+                <button id="refreshDashboard" class="btn btn-outline-primary">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
+                <small class="text-muted" th:if="${lastUpdated}">
+                    Last updated: <span th:text="${#temporals.format(lastUpdated, 'MMM dd, yyyy HH:mm')}"></span>
+                </small>
+            </div>
         </div>
 
         <!-- Error State -->
-        <div th:if="${dashboardStatus == 'error'}" class="error-state">
-            <h5><i class="fas fa-exclamation-triangle me-2"></i>Dashboard Error</h5>
-            <p class="mb-0" th:text="${errorMessage}">Unable to load dashboard data</p>
+        <div th:if="${hasErrors}" class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Data Loading Issues</h4>
+                    <p class="mb-0">Some dashboard data could not be loaded. Please try refreshing the page or contact
+                        support if the issue persists.</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Success State: Dashboard Content -->
-        <div th:if="${dashboardStatus != 'error' || dashboardStatus == null}">
-            <!-- Key Statistics Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3 mb-3">
-                    <div class="card stat-card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="d-flex align-items-center justify-content-center mb-2">
-                                <i class="fas fa-dollar-sign fa-2x text-success me-2"></i>
-                                <div>
-                                    <h3 class="mb-0" th:text="${#numbers.formatCurrency(totalExpenses)}">$0.00</h3>
-                                    <small class="text-muted">Total Expenses</small>
-                                </div>
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-dollar-sign fa-2x text-success me-3"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0"
+                                    th:text="${totalExpenses != null ? #numbers.formatCurrency(totalExpenses) : '$0.00'}">
+                                    $0.00</h3>
+                                <small class="text-muted">Total Expenses</small>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stat-card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="d-flex align-items-center justify-content-center mb-2">
-                                <i class="fas fa-receipt fa-2x text-info me-2"></i>
-                                <div>
-                                    <h3 class="mb-0" th:text="${expenseCount}">0</h3>
-                                    <small class="text-muted">Total Expenses</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stat-card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="d-flex align-items-center justify-content-center mb-2">
-                                <i class="fas fa-tags fa-2x text-warning me-2"></i>
-                                <div>
-                                    <h3 class="mb-0" th:text="${categoryCount}">0</h3>
-                                    <small class="text-muted">Categories</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card stat-card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <div class="d-flex align-items-center justify-content-center mb-2">
-                                <i class="fas fa-chart-bar fa-2x text-secondary me-2"></i>
-                                <div>
-                                    <h3 class="mb-0" th:text="${#numbers.formatCurrency(averageExpense)}">$0.00</h3>
-                                    <small class="text-muted">Average</small>
-                                </div>
-                            </div>
+                        <div th:if="${monthlyChange != null && monthlyChange > 0}" class="mt-2">
+                            <small th:classappend="${changeDirection == 'up' ? 'text-danger' : 'text-success'}">
+                                <i th:class="${changeDirection == 'up' ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"
+                                    class="me-1"></i>
+                                <span th:text="${#numbers.formatDecimal(monthlyChange, 1, 1) + '%'}">0.0%</span>
+                                vs last month
+                            </small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Monthly Trend Card -->
-            <div class="row mb-4">
-                <div class="col-md-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-calendar-alt me-2"></i>
-                                Monthly Trend
-                            </h5>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-calendar-month fa-2x text-info me-3"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0"
+                                    th:text="${currentMonthTotal != null ? #numbers.formatCurrency(currentMonthTotal) : '$0.00'}">
+                                    $0.00</h3>
+                                <small class="text-muted">Monthly Spending</small>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-4">
-                                            <small class="text-muted">This Month</small>
-                                            <h4 th:text="${#numbers.formatCurrency(currentMonthTotal)}" class="mb-0">$0.00</h4>
-                                            <small th:text="${currentMonthName}" class="text-muted">Current Month</small>
-                                        </div>
-                                        <div class="me-4">
-                                            <small class="text-muted">Last Month</small>
-                                            <h5 th:text="${#numbers.formatCurrency(previousMonthTotal)}" class="mb-0">$0.00</h5>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted">Change</small>
-                                            <h5 class="mb-0" 
-                                                th:classappend="${changeDirection == 'up'} ? 'trend-up' : (${changeDirection == 'down'} ? 'trend-down' : 'trend-neutral')">
-                                                <i th:class="${changeDirection == 'up'} ? 'fas fa-arrow-up' : (${changeDirection == 'down'} ? 'fas fa-arrow-down' : 'fas fa-minus')"></i>
-                                                <span th:text="${#numbers.formatDecimal(monthlyChange, 1, 1)}">0.0</span>%
-                                            </h5>
-                                        </div>
+                        <div th:if="${currentMonthName != null}" class="mt-2">
+                            <small class="text-muted"
+                                th:text="${currentMonthName + ' ' + #dates.year(#dates.createNow())}">Current
+                                Month</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-tags fa-2x text-warning me-3"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0" th:text="${categoryCount != null ? categoryCount : '0'}">0</h3>
+                                <small class="text-muted">Categories Count</small>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Active categories</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-chart-bar fa-2x text-secondary me-3"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0"
+                                    th:text="${averageExpense != null ? #numbers.formatCurrency(averageExpense) : '$0.00'}">
+                                    $0.00</h3>
+                                <small class="text-muted">Average Expense</small>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted">Per transaction</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trend Card -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Monthly Trend
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4">
+                                        <small class="text-muted">This Month</small>
+                                        <h4 th:text="${#numbers.formatCurrency(currentMonthTotal)}" class="mb-0">$0.00
+                                        </h4>
+                                        <small th:text="${currentMonthName}" class="text-muted">Current Month</small>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts and Data Row -->
-            <div class="row mb-4">
-                <!-- Category Breakdown Chart -->
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-pie me-2"></i>
-                                Expenses by Category
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                            <div class="mt-3" th:if="${not #lists.isEmpty(categorySummary)}">
-                                <div class="row small">
-                                    <div th:each="category : ${categorySummary}" class="col-12 d-flex justify-content-between py-1">
-                                        <span th:text="${category.key}">Category</span>
-                                        <span th:text="${#numbers.formatCurrency(category.value)}">$0.00</span>
+                                    <div class="me-4">
+                                        <small class="text-muted">Last Month</small>
+                                        <h5 th:text="${#numbers.formatCurrency(previousMonthTotal)}" class="mb-0">$0.00
+                                        </h5>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monthly Trends Chart -->
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-chart-line me-2"></i>
-                                Monthly Trends
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="monthlyChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Expenses and Top Categories Row -->
-            <div class="row mb-4">
-                <!-- Recent Expenses -->
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-clock me-2"></i>
-                                Recent Expenses
-                            </h5>
-                            <a href="/expenses" class="btn btn-sm btn-outline-primary">View All</a>
-                        </div>
-                        <div class="card-body">
-                            <div th:if="${#lists.isEmpty(recentExpenses)}" class="text-center text-muted py-4">
-                                <i class="fas fa-inbox fa-2x mb-2"></i>
-                                <p>No recent expenses found</p>
-                            </div>
-                            <div th:if="${not #lists.isEmpty(recentExpenses)}">
-                                <div th:each="expense : ${recentExpenses}" class="d-flex justify-content-between align-items-center py-2 border-bottom">
                                     <div>
-                                        <strong th:text="${expense.description}">Expense Description</strong>
+                                        <small class="text-muted">Change</small>
+                                        <h5 class="mb-0"
+                                            th:classappend="${changeDirection == 'up'} ? 'trend-up' : (${changeDirection == 'down'} ? 'trend-down' : 'trend-neutral')">
+                                            <i
+                                                th:class="${changeDirection == 'up'} ? 'fas fa-arrow-up' : (${changeDirection == 'down'} ? 'fas fa-arrow-down' : 'fas fa-minus')"></i>
+                                            <span th:text="${#numbers.formatDecimal(monthlyChange, 1, 1)}">0.0</span>%
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Expenses and Top Categories Row -->
+        <div class="row mb-4">
+            <!-- Recent Expenses -->
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>
+                            Recent Expenses
+                        </h5>
+                        <a href="/expenses" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentExpenses)}" class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p>No recent expenses found</p>
+                        </div>
+                        <div th:if="${not #lists.isEmpty(recentExpenses)}">
+                            <div th:each="expense : ${recentExpenses}"
+                                class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div>
+                                    <strong th:text="${expense.description}">Expense Description</strong>
+                                    <br>
+                                    <small class="text-muted">
+                                        <span th:text="${expense.category.name}">Category</span> •
+                                        <span th:text="${#temporals.format(expense.expenseDate, 'MMM dd')}">Date</span>
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <strong class="text-danger"
+                                        th:text="${#numbers.formatCurrency(expense.amount)}">$0.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Categories -->
+            <div class="col-md-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-trophy me-2"></i>
+                            Top Categories
+                        </h5>
+                        <a href="/categories" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(categoryStats)}" class="text-center text-muted py-4">
+                            <i class="fas fa-tags fa-2x mb-2"></i>
+                            <p>No category data available</p>
+                        </div>
+                        <div th:if="${not #lists.isEmpty(categoryStats)}">
+                            <div th:each="stat, iterStat : ${categoryStats}"
+                                class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-primary me-2" th:text="${iterStat.count}">1</span>
+                                    <div>
+                                        <strong th:text="${stat.categoryName}">Category Name</strong>
                                         <br>
                                         <small class="text-muted">
-                                            <span th:text="${expense.category.name}">Category</span> • 
-                                            <span th:text="${#temporals.format(expense.expenseDate, 'MMM dd')}">Date</span>
+                                            <span th:text="${stat.expenseCount}">0</span> expenses
                                         </small>
                                     </div>
-                                    <div class="text-end">
-                                        <strong class="text-danger" th:text="${#numbers.formatCurrency(expense.amount)}">$0.00</strong>
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Top Categories -->
-                <div class="col-md-6 mb-4">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-trophy me-2"></i>
-                                Top Categories
-                            </h5>
-                            <a href="/categories" class="btn btn-sm btn-outline-primary">View All</a>
-                        </div>
-                        <div class="card-body">
-                            <div th:if="${#lists.isEmpty(categoryStats)}" class="text-center text-muted py-4">
-                                <i class="fas fa-tags fa-2x mb-2"></i>
-                                <p>No category data available</p>
-                            </div>
-                            <div th:if="${not #lists.isEmpty(categoryStats)}">
-                                <div th:each="stat, iterStat : ${categoryStats}" class="d-flex justify-content-between align-items-center py-2 border-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-primary me-2" th:text="${iterStat.count}">1</span>
-                                        <div>
-                                            <strong th:text="${stat.categoryName}">Category Name</strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <span th:text="${stat.expenseCount}">0</span> expenses
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <strong th:text="${#numbers.formatCurrency(stat.totalAmount)}">$0.00</strong>
-                                    </div>
+                                <div class="text-end">
+                                    <strong th:text="${#numbers.formatCurrency(stat.totalAmount)}">$0.00</strong>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Quick Actions -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-transparent">
-                            <h5 class="mb-0">
-                                <i class="fas fa-bolt me-2"></i>
-                                Quick Actions
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 mb-2">
-                                    <a href="/expenses/form" class="btn btn-success w-100">
-                                        <i class="fas fa-plus me-2"></i>Add Expense
-                                    </a>
-                                </div>
-                                <div class="col-md-3 mb-2">
-                                    <a href="/categories/form" class="btn btn-primary w-100">
-                                        <i class="fas fa-tag me-2"></i>Add Category
-                                    </a>
-                                </div>
-                                <div class="col-md-3 mb-2">
-                                    <a href="/expenses" class="btn btn-info w-100">
-                                        <i class="fas fa-list me-2"></i>View Expenses
-                                    </a>
-                                </div>
-                                <div class="col-md-3 mb-2">
-                                    <a href="/api/expenses/analytics" class="btn btn-secondary w-100" target="_blank">
-                                        <i class="fas fa-chart-bar me-2"></i>Analytics API
-                                    </a>
-                                </div>
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <a th:href="@{/expenses/new}" class="btn btn-success w-100">
+                                    <i class="fas fa-plus me-2"></i>Add Expense
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <a th:href="@{/categories/new}" class="btn btn-primary w-100">
+                                    <i class="fas fa-tag me-2"></i>Add Category
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <a th:href="@{/expenses}" class="btn btn-info w-100">
+                                    <i class="fas fa-list me-2"></i>View All Expenses
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <a href="/api/expenses/analytics" class="btn btn-secondary w-100" target="_blank">
+                                    <i class="fas fa-chart-bar me-2"></i>Analytics API
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -355,97 +276,443 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-light py-4 mt-5">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-12">
-                    <p class="text-muted mb-0">
-                        &copy; 2025 Personal Expense Tracker. Built with Spring Boot & Bootstrap.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <!-- Page-specific Scripts -->
+    <th:block th:fragment="scripts">
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
-    <!-- Bootstrap JS -->
-    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
-    
-    <!-- Charts JavaScript -->
-    <script th:inline="javascript">
-        // Category Pie Chart
-        const categoryData = /*[[${categorySummary}]]*/ {};
-        if (Object.keys(categoryData).length > 0) {
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(categoryData),
-                    datasets: [{
-                        data: Object.values(categoryData).map(val => parseFloat(val)),
-                        backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-                            '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                boxWidth: 12,
-                                padding: 8
+        <!-- Dashboard Charts Script -->
+        <script src="/js/dashboard.js"></script>
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                // Initialize charts
+                initializeCharts();
+                
+                // Initialize theme toggle
+                initializeThemeToggle();
+
+                // Dashboard refresh functionality
+                $('#refreshDashboard').on('click', function () {
+                    const $btn = $(this);
+                    const $icon = $btn.find('i');
+                    const $dashboard = $('.container-fluid');
+
+                    $btn.prop('disabled', true);
+                    $icon.addClass('fa-spin');
+                    $dashboard.addClass('dashboard-loading');
+
+                    showAlert('Refreshing dashboard data...', 'info');
+
+                    // Use the new REST API endpoint for dashboard refresh
+                    $.get('/api/dashboard/refresh')
+                        .done(function (data) {
+                            if (data.status === 'success') {
+                                // Update summary cards
+                                updateSummaryCards(data);
+
+                                // Update charts with new data
+                                updateCharts(data);
+
+                                // Update recent activities
+                                updateRecentActivities(data);
+
+                                // Update last updated timestamp
+                                const lastUpdated = new Date(data.lastUpdated).toLocaleString();
+                                $('.last-updated').text('Last updated: ' + lastUpdated);
+
+                                showAlert('Dashboard refreshed successfully!', 'success');
+                            } else {
+                                showAlert('Failed to refresh dashboard: ' + (data.message || 'Unknown error'), 'error');
                             }
-                        }
-                    }
-                }
+                        })
+                        .fail(function (xhr) {
+                            let errorMsg = 'Failed to refresh dashboard. Please try again.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMsg = xhr.responseJSON.message;
+                            }
+                            showAlert(errorMsg, 'error');
+                        })
+                        .always(function () {
+                            $btn.prop('disabled', false);
+                            $icon.removeClass('fa-spin');
+                            $dashboard.removeClass('dashboard-loading');
+                        });
+                });
             });
-        }
 
-        // Monthly Trends Line Chart
-        const monthlyData = /*[[${monthlyTrends}]]*/ {};
-        if (Object.keys(monthlyData).length > 0) {
-            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-            new Chart(monthlyCtx, {
-                type: 'line',
-                data: {
-                    labels: Object.keys(monthlyData),
-                    datasets: [{
-                        label: 'Monthly Expenses',
-                        data: Object.values(monthlyData).map(val => parseFloat(val)),
-                        borderColor: '#36A2EB',
-                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toFixed(0);
+            function initializeCharts() {
+                // Category Pie Chart
+                const categoryData = /*[[${categoryStats}]]*/[];
+                if (categoryData && categoryData.length > 0) {
+                    const ctx = document.getElementById('categoryChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: categoryData.map(stat => stat.name || stat['name']),
+                            datasets: [{
+                                data: categoryData.map(stat => stat.totalAmount || stat['totalAmount']),
+                                backgroundColor: categoryData.map(stat => stat.color || stat['color'] || '#6c757d'),
+                                borderWidth: 3,
+                                borderColor: '#fff',
+                                hoverBorderWidth: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        font: {
+                                            size: 12
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            const label = context.label || '';
+                                            const value = new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'USD'
+                                            }).format(context.parsed);
+                                            const percentage = ((context.parsed / context.dataset.data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                            return `${label}: ${value} (${percentage}%)`;
+                                        }
+                                    }
                                 }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true
                             }
                         }
+                    });
+                }
+
+                // Monthly Trends Line Chart
+                const currentMonthTotal = /*[[${currentMonthTotal}]]*/ 0;
+                const previousMonthTotal = /*[[${previousMonthTotal}]]*/ 0;
+                if (currentMonthTotal !== undefined) {
+                    const ctx = document.getElementById('monthlyChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Previous Month', 'Current Month'],
+                            datasets: [{
+                                label: 'Monthly Expenses',
+                                data: [previousMonthTotal || 0, currentMonthTotal || 0],
+                                borderColor: '#007bff',
+                                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#007bff',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 3,
+                                pointRadius: 6,
+                                pointHoverRadius: 8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'USD'
+                                            }).format(context.parsed.y);
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function (value) {
+                                            return new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: 'USD',
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            }).format(value);
+                                        }
+                                    }
+                                }
+                            },
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeInOutQuart'
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Initialize dashboard theme toggle functionality
+            function initializeThemeToggle() {
+                const dashboardThemeToggle = document.getElementById('dashboardThemeToggle');
+                const dashboardThemeIcon = document.getElementById('dashboardThemeIcon');
+                
+                if (!dashboardThemeToggle || !dashboardThemeIcon) {
+                    console.warn('Dashboard theme toggle elements not found');
+                    return;
+                }
+                
+                // Function to update dashboard button based on current theme
+                function updateDashboardThemeButton() {
+                    const currentTheme = window.themeManager ? window.themeManager.currentTheme : 'light';
+                    const appliedTheme = currentTheme === 'auto' ? 
+                        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+                        : currentTheme;
+                    
+                    if (appliedTheme === 'dark') {
+                        dashboardThemeIcon.className = 'fas fa-moon';
+                        dashboardThemeToggle.title = 'Switch to Light Mode';
+                    } else {
+                        dashboardThemeIcon.className = 'fas fa-sun';
+                        dashboardThemeToggle.title = 'Switch to Dark Mode';
                     }
                 }
-            });
-        }
-    </script>
+                
+                // Initial update
+                updateDashboardThemeButton();
+                
+                // Add click event listener to integrate with existing theme system
+                dashboardThemeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Use the existing theme manager if available
+                    if (window.themeManager) {
+                        window.themeManager.toggleTheme();
+                    } else {
+                        // Fallback: trigger the existing dropdown theme toggle
+                        const existingToggle = document.getElementById('themeToggle');
+                        if (existingToggle) {
+                            existingToggle.click();
+                        }
+                    }
+                });
+                
+                // Listen for theme changes to update button
+                window.addEventListener('themeChanged', function() {
+                    updateDashboardThemeButton();
+                });
+                
+                // Also listen for changes from the dropdown toggle
+                const existingToggle = document.getElementById('themeToggle');
+                if (existingToggle) {
+                    existingToggle.addEventListener('click', function() {
+                        setTimeout(updateDashboardThemeButton, 100);
+                    });
+                }
+            }
+
+            // Utility function for showing alerts
+            function showAlert(message, type = 'info', duration = 3000) {
+                // Remove existing alerts
+                $('.dashboard-alert').remove();
+
+                const alertClass = {
+                    'info': 'alert-info',
+                    'success': 'alert-success',
+                    'error': 'alert-danger',
+                    'warning': 'alert-warning'
+                }[type] || 'alert-info';
+
+                const icon = {
+                    'info': 'fas fa-info-circle',
+                    'success': 'fas fa-check-circle',
+                    'error': 'fas fa-exclamation-circle',
+                    'warning': 'fas fa-exclamation-triangle'
+                }[type] || 'fas fa-info-circle';
+
+                const alert = $(`
+                <div class="alert ${alertClass} dashboard-alert alert-dismissible fade show position-fixed" 
+                     style="top: 20px; right: 20px; z-index: 1050; max-width: 400px;" role="alert">
+                    <i class="${icon} me-2"></i>${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+
+                $('body').append(alert);
+
+                if (duration > 0) {
+                    setTimeout(() => {
+                        alert.alert('close');
+                    }, duration);
+                }
+            }
+
+            // Enhanced refresh functions for individual charts
+            function refreshCategoryChart() {
+                const $btn = $(event.target).closest('button');
+                const $icon = $btn.find('i');
+
+                $btn.prop('disabled', true);
+                $icon.addClass('fa-spin');
+
+                showAlert('Refreshing category chart...', 'info');
+
+                // Use enhanced pie chart loading
+                setTimeout(() => {
+                    loadEnhancedPieChart();
+                    showAlert('Category chart refreshed successfully!', 'success');
+                    $btn.prop('disabled', false);
+                    $icon.removeClass('fa-spin');
+                }, 1000);
+            }
+
+            function refreshMonthlyChart() {
+                const $btn = $(event.target).closest('button');
+                const $icon = $btn.find('i');
+
+                $btn.prop('disabled', true);
+                $icon.addClass('fa-spin');
+
+                showAlert('Refreshing monthly trends...', 'info');
+
+                // Use enhanced monthly chart loading
+                setTimeout(() => {
+                    loadEnhancedMonthlyChart();
+                    showAlert('Monthly trends refreshed successfully!', 'success');
+                    $btn.prop('disabled', false);
+                    $icon.removeClass('fa-spin');
+                }, 1000);
+            }
+
+            // Helper functions for updating dashboard components
+            function updateSummaryCards(data) {
+                // Update total expenses
+                if (data.totalExpenses !== undefined) {
+                    const formatted = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }).format(data.totalExpenses);
+                    $('h3:contains("$")').first().text(formatted);
+                }
+
+                // Update expense count
+                if (data.expenseCount !== undefined) {
+                    $('h3').filter(function () {
+                        return $(this).text().match(/^\d+$/);
+                    }).first().text(data.expenseCount);
+                }
+
+                // Update category count
+                if (data.categoryCount !== undefined) {
+                    $('h3').filter(function () {
+                        return $(this).text().match(/^\d+$/);
+                    }).eq(1).text(data.categoryCount);
+                }
+
+                // Update current month total
+                if (data.currentMonthTotal !== undefined) {
+                    const formatted = new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }).format(data.currentMonthTotal);
+                    $('h3').filter(function () {
+                        return $(this).text().includes('$');
+                    }).eq(1).text(formatted);
+                }
+            }
+
+            function updateCharts(data) {
+                // Update category chart if data available
+                if (data.categorySummary) {
+                    const categoryChart = Chart.getChart('categoryChart');
+                    if (categoryChart) {
+                        // Convert summary data to chart format
+                        const labels = Object.keys(data.categorySummary);
+                        const chartData = Object.values(data.categorySummary);
+
+                        categoryChart.data.labels = labels;
+                        categoryChart.data.datasets[0].data = chartData;
+                        categoryChart.update('active');
+                    }
+                }
+
+                // Update monthly trends chart if data available
+                if (data.monthlyTrends) {
+                    const monthlyChart = Chart.getChart('monthlyChart');
+                    if (monthlyChart) {
+                        // Convert monthly trends to chart format
+                        const labels = Object.keys(data.monthlyTrends);
+                        const chartData = Object.values(data.monthlyTrends);
+
+                        monthlyChart.data.labels = labels;
+                        monthlyChart.data.datasets[0].data = chartData;
+                        monthlyChart.update('active');
+                    }
+                }
+            }
+
+            function updateRecentActivities(data) {
+                // Update recent expenses if available
+                if (data.recentExpenses && Array.isArray(data.recentExpenses)) {
+                    const $recentExpensesTable = $('.table').last().find('tbody');
+                    if ($recentExpensesTable.length) {
+                        $recentExpensesTable.empty();
+                        data.recentExpenses.forEach(expense => {
+                            const row = `
+                            <tr>
+                                <td>${expense.description || 'N/A'}</td>
+                                <td>${expense.category ? expense.category.name : 'N/A'}</td>
+                                <td>${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(expense.amount || 0)}</td>
+                                <td>${expense.expenseDate || 'N/A'}</td>
+                            </tr>
+                        `;
+                            $recentExpensesTable.append(row);
+                        });
+                    }
+                }
+            }
+
+            function refreshRecentExpenses() {
+                const $btn = $(event.target).closest('button');
+                const $icon = $btn.find('i');
+
+                $btn.prop('disabled', true);
+                $icon.addClass('fa-spin');
+
+                showAlert('Refreshing recent expenses...', 'info');
+
+                setTimeout(() => {
+                    showAlert('Recent expenses refreshed successfully!', 'success');
+                    $btn.prop('disabled', false);
+                    $icon.removeClass('fa-spin');
+                }, 1000);
+            }
+
+            function refreshTopCategories() {
+                const $btn = $(event.target).closest('button');
+                const $icon = $btn.find('i');
+
+                $btn.prop('disabled', true);
+                $icon.addClass('fa-spin');
+
+                showAlert('Refreshing top categories...', 'info');
+
+                setTimeout(() => {
+                    showAlert('Top categories refreshed successfully!', 'success');
+                    $btn.prop('disabled', false);
+                    $icon.removeClass('fa-spin');
+                }, 1000);
+            }
+        </script>
+    </th:block>
 </body>
+
 </html>

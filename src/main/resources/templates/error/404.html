@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(title='Not Found - 404', content=~{::content})}">
+
+<div th:fragment="content" class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Error Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-danger text-white text-center">
+                    <div class="error-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-4x opacity-75"></i>
+                    </div>
+                    <h1 class="card-title mb-2">404 - Page Not Found</h1>
+                    <p class="card-text mb-0">The requested resource could not be found</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Error Details -->
+                    <div class="alert alert-light border" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2 text-danger"></i>
+                            What happened?
+                        </h5>
+                        <p class="mb-2" th:text="${errorMessage}">The page you are looking for does not exist.</p>
+                        <hr class="my-3">
+                        <p class="mb-0 text-muted">
+                            <small>
+                                <strong>Requested URL:</strong> 
+                                <code th:text="${requestUrl}">Unknown</code>
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Helpful Actions -->
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-home fa-2x text-primary mb-3"></i>
+                                    <h6 class="card-title">Go to Dashboard</h6>
+                                    <p class="card-text text-muted small">Return to the main dashboard</p>
+                                    <a href="/" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-arrow-left me-1"></i>Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-list fa-2x text-success mb-3"></i>
+                                    <h6 class="card-title">Browse Expenses</h6>
+                                    <p class="card-text text-muted small">View and manage your expenses</p>
+                                    <a href="/expenses" class="btn btn-success btn-sm">
+                                        <i class="fas fa-receipt me-1"></i>Expenses
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Help -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted">
+                            <i class="fas fa-question-circle me-2"></i>
+                            Need help?
+                        </h6>
+                        <ul class="list-unstyled mb-0 text-muted small">
+                            <li class="mb-1">• Check if the URL is spelled correctly</li>
+                            <li class="mb-1">• Use the navigation menu to find what you're looking for</li>
+                            <li class="mb-1">• The page might have been moved or deleted</li>
+                            <li>• Try going back to the previous page</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
