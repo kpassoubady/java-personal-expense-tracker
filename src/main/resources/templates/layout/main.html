@@ -21,6 +21,9 @@
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" 
           crossorigin="anonymous">
     
+    <!-- Theme System CSS -->
+    <link th:href="@{/css/theme.css}" rel="stylesheet" href="/css/theme.css">
+    
     <!-- Custom Styles -->
     <style>
         /* Navigation Styles */
@@ -119,9 +122,22 @@
         
         /* Footer Styles */
         .footer {
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
             margin-top: auto;
+            color: var(--text-secondary);
+        }
+        
+        .footer .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .footer a {
+            color: var(--text-secondary);
+        }
+        
+        .footer a:hover {
+            color: var(--text-primary);
         }
         
         /* Responsive Utilities */
@@ -253,6 +269,11 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" th:href="@{/about}">
                                 <i class="fas fa-info-circle me-2"></i>About
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="themeToggle">
+                                <i id="themeIcon" class="fas fa-moon me-2"></i>
+                                <span id="themeText">Light Mode</span>
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/h2-console" target="_blank">
@@ -459,6 +480,166 @@
                 day: 'numeric'
             });
         }
+
+        // Theme Toggle Functionality
+        class ThemeManager {
+            constructor() {
+                this.currentTheme = localStorage.getItem('theme') || 'light';
+                this.init();
+            }
+
+            init() {
+                // Apply saved theme on page load
+                this.applyTheme(this.currentTheme);
+                
+                // Setup toggle button
+                const themeToggle = document.getElementById('themeToggle');
+                if (themeToggle) {
+                    themeToggle.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        this.toggleTheme();
+                    });
+                }
+
+                // Update button appearance
+                this.updateToggleButton();
+
+                // Listen for system theme changes
+                if (window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                        if (this.currentTheme === 'auto') {
+                            this.applyTheme('auto');
+                        }
+                    });
+                }
+
+                // Keyboard shortcut: Ctrl/Cmd + Shift + T for theme toggle
+                document.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                        e.preventDefault();
+                        this.toggleTheme();
+                    }
+                });
+            }
+
+            toggleTheme() {
+                const themes = ['light', 'dark', 'auto'];
+                const currentIndex = themes.indexOf(this.currentTheme);
+                const nextIndex = (currentIndex + 1) % themes.length;
+                
+                this.currentTheme = themes[nextIndex];
+                this.applyTheme(this.currentTheme);
+                this.saveTheme();
+                this.updateToggleButton();
+                
+                // Show theme change notification
+                this.showThemeNotification();
+            }
+
+            applyTheme(theme) {
+                const html = document.documentElement;
+                const body = document.body;
+                
+                // Remove existing theme classes
+                html.classList.remove('theme-light', 'theme-dark');
+                body.classList.remove('theme-light', 'theme-dark');
+                
+                let appliedTheme = theme;
+                
+                // Handle auto theme
+                if (theme === 'auto') {
+                    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    appliedTheme = prefersDark ? 'dark' : 'light';
+                }
+                
+                // Apply theme classes
+                html.classList.add(`theme-${appliedTheme}`);
+                body.classList.add(`theme-${appliedTheme}`);
+                
+                // Set CSS custom property for theme
+                html.style.setProperty('--current-theme', appliedTheme);
+                
+                // Update Bootstrap theme
+                if (appliedTheme === 'dark') {
+                    html.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    html.removeAttribute('data-bs-theme');
+                }
+                
+                // Dispatch theme change event
+                window.dispatchEvent(new CustomEvent('themeChanged', {
+                    detail: { theme: appliedTheme, userPreference: theme }
+                }));
+            }
+
+            updateToggleButton() {
+                const themeIcon = document.getElementById('themeIcon');
+                const themeText = document.getElementById('themeText');
+                
+                if (!themeIcon || !themeText) return;
+                
+                const themeConfig = {
+                    light: { icon: 'fas fa-sun', text: 'Light Mode', color: '#ffc107' },
+                    dark: { icon: 'fas fa-moon', text: 'Dark Mode', color: '#6c757d' },
+                    auto: { icon: 'fas fa-adjust', text: 'Auto Mode', color: '#17a2b8' }
+                };
+                
+                const config = themeConfig[this.currentTheme];
+                themeIcon.className = `${config.icon} me-2`;
+                themeIcon.style.color = config.color;
+                themeText.textContent = config.text;
+                
+                // Update tooltip
+                const toggle = document.getElementById('themeToggle');
+                if (toggle) {
+                    toggle.title = `Current: ${config.text}. Click to cycle themes.`;
+                }
+            }
+
+            saveTheme() {
+                localStorage.setItem('theme', this.currentTheme);
+            }
+
+            showThemeNotification() {
+                // Create a simple toast notification
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed top-0 end-0 p-3';
+                toast.style.zIndex = '9999';
+                
+                const themeNames = {
+                    light: 'Light Mode',
+                    dark: 'Dark Mode', 
+                    auto: 'Auto Mode'
+                };
+                
+                toast.innerHTML = `
+                    <div class="toast align-items-center text-bg-primary border-0" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-palette me-2"></i>
+                                Switched to ${themeNames[this.currentTheme]}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                const bsToast = new bootstrap.Toast(toast.querySelector('.toast'), { delay: 2000 });
+                bsToast.show();
+                
+                // Remove toast after hiding
+                toast.addEventListener('hidden.bs.toast', () => {
+                    document.body.removeChild(toast);
+                });
+            }
+        }
+
+        // Initialize theme manager when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            window.themeManager = new ThemeManager();
+        });
     </script>
     
     <!-- Page-specific Scripts -->

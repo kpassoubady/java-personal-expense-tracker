@@ -271,4 +271,18 @@ public class CategoryService {
         }
         return categoryRepository.findByNameOrDescriptionContainingIgnoreCase(searchText.trim());
     }
+
+    /**
+     * Check if a category with the given name exists (case-insensitive).
+     * 
+     * @param name the category name to check
+     * @return true if category exists, false otherwise
+     */
+    @Transactional(readOnly = true)
+    public boolean existsByName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        return categoryRepository.findByNameIgnoreCase(name.trim()).isPresent();
+    }
 }
