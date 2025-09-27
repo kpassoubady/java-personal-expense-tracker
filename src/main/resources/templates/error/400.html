@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(title='Bad Request - 400', content=~{::content})}">
+
+<div th:fragment="content" class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Error Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-warning text-dark text-center">
+                    <div class="error-icon mb-3">
+                        <i class="fas fa-exclamation-triangle fa-4x opacity-75"></i>
+                    </div>
+                    <h1 class="card-title mb-2">400 - Bad Request</h1>
+                    <p class="card-text mb-0">The request could not be understood</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Error Details -->
+                    <div class="alert alert-light border" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2 text-warning"></i>
+                            What happened?
+                        </h5>
+                        <p class="mb-2" th:text="${errorMessage}">The server could not understand your request due to invalid syntax or missing information.</p>
+                        <hr class="my-3">
+                        <p class="mb-0 text-muted">
+                            <small>
+                                <strong>Requested URL:</strong> 
+                                <code th:text="${requestUrl}">Unknown</code>
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Common Issues -->
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning">
+                                        <i class="fas fa-clipboard-check me-2"></i>
+                                        Check Your Input
+                                    </h6>
+                                    <ul class="card-text text-muted small mb-0">
+                                        <li>Make sure all required fields are filled</li>
+                                        <li>Check that numbers are valid</li>
+                                        <li>Verify date formats are correct</li>
+                                        <li>Ensure text doesn't exceed limits</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning">
+                                        <i class="fas fa-link me-2"></i>
+                                        URL Problems
+                                    </h6>
+                                    <ul class="card-text text-muted small mb-0">
+                                        <li>The URL might be malformed</li>
+                                        <li>Required parameters are missing</li>
+                                        <li>The link might be outdated</li>
+                                        <li>Try navigating from the menu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-2">
+                            <button onclick="history.back()" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-arrow-left me-1"></i>Go Back
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/expenses" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-list me-1"></i>View Expenses
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/" class="btn btn-primary w-100">
+                                <i class="fas fa-home me-1"></i>Dashboard
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Helpful Tips -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            Helpful Tips
+                        </h6>
+                        <div class="row text-muted small">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-1">• Double-check form data before submitting</li>
+                                    <li class="mb-1">• Use the navigation menu for reliable links</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-1">• Try refreshing the page and trying again</li>
+                                    <li class="mb-1">• Contact support if the problem persists</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
