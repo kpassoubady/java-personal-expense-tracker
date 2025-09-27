@@ -6,6 +6,8 @@ import com.expensetracker.app.entity.Expense;
 import com.expensetracker.app.service.CategoryService;
 import com.expensetracker.app.service.ExpenseService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,8 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/expenses")
 public class ExpenseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExpenseController.class);
 
     @Autowired
     private ExpenseService expenseService;
@@ -151,22 +155,58 @@ public class ExpenseController {
                               BindingResult bindingResult, 
                               Model model, 
                               RedirectAttributes redirectAttributes) {
+        
+        // Custom business rule validations
+        validateExpenseBusinessRules(expense, bindingResult);
+        
         if (bindingResult.hasErrors()) {
+            // Log validation errors for debugging
+            logger.warn("Validation errors in expense creation: {}", bindingResult.getErrorCount());
+            
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Add New Expense");
             model.addAttribute("formAction", "/expenses");
+            model.addAttribute("error", "Please correct the errors below and try again.");
+            
             return "expenses/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
+            // Set category from categoryId if provided
+            if (expense.getCategory() == null && expense.getCategoryId() != null) {
+                Category category = categoryService.getCategoryById(expense.getCategoryId());
+                expense.setCategory(category);
+            }
+            
             expenseService.saveExpense(expense);
-            redirectAttributes.addFlashAttribute("success", "Expense created successfully!");
+            
+            // Success message with expense details
+            String successMessage = String.format(
+                "Expense '%s' of $%.2f created successfully!", 
+                expense.getDescription(), expense.getAmount());
+            redirectAttributes.addFlashAttribute("success", successMessage);
+            
+            // PRG Pattern - Always redirect after successful POST
             return "redirect:/expenses";
+            
         } catch (IllegalArgumentException e) {
+            logger.warn("Business rule violation in expense creation: {}", e.getMessage());
+            
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Add New Expense");
             model.addAttribute("formAction", "/expenses");
+            
+            return "expenses/form" + templateConfig.getTemplateSuffix();
+            
+        } catch (Exception e) {
+            logger.error("Unexpected error creating expense", e);
+            
+            model.addAttribute("error", "An unexpected error occurred. Please try again.");
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("pageTitle", "Add New Expense");
+            model.addAttribute("formAction", "/expenses");
+            
             return "expenses/form" + templateConfig.getTemplateSuffix();
         }
     }
@@ -187,23 +227,72 @@ public class ExpenseController {
                               BindingResult bindingResult, 
                               Model model, 
                               RedirectAttributes redirectAttributes) {
+        
+        // Validate path variable
+        if (id == null || id <= 0) {
+            redirectAttributes.addFlashAttribute("error", "Invalid expense ID");
+            return "redirect:/expenses";
+        }
+        
+        // Ensure expense exists
+        Optional<Expense> existingExpense = expenseService.findById(id);
+        if (!existingExpense.isPresent()) {
+            redirectAttributes.addFlashAttribute("error", "Expense not found");
+            return "redirect:/expenses";
+        }
+        
+        // Custom business rule validations
+        validateExpenseBusinessRules(expense, bindingResult);
+        
         if (bindingResult.hasErrors()) {
+            logger.warn("Validation errors in expense update: {}", bindingResult.getErrorCount());
+            
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Edit Expense");
             model.addAttribute("formAction", "/expenses/" + id);
+            model.addAttribute("error", "Please correct the errors below and try again.");
+            
             return "expenses/form" + templateConfig.getTemplateSuffix();
         }
 
         try {
             expense.setId(id);
+            
+            // Set category from categoryId if provided
+            if (expense.getCategory() == null && expense.getCategoryId() != null) {
+                Category category = categoryService.getCategoryById(expense.getCategoryId());
+                expense.setCategory(category);
+            }
+            
             expenseService.saveExpense(expense);
-            redirectAttributes.addFlashAttribute("success", "Expense updated successfully!");
+            
+            // Success message with expense details
+            String successMessage = String.format(
+                "Expense '%s' updated successfully!", 
+                expense.getDescription());
+            redirectAttributes.addFlashAttribute("success", successMessage);
+            
+            // PRG Pattern - Always redirect after successful POST
             return "redirect:/expenses";
+            
         } catch (IllegalArgumentException e) {
+            logger.warn("Business rule violation in expense update: {}", e.getMessage());
+            
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("pageTitle", "Edit Expense");
             model.addAttribute("formAction", "/expenses/" + id);
+            
+            return "expenses/form" + templateConfig.getTemplateSuffix();
+            
+        } catch (Exception e) {
+            logger.error("Unexpected error updating expense with ID: {}", id, e);
+            
+            model.addAttribute("error", "An unexpected error occurred. Please try again.");
+            model.addAttribute("categories", categoryService.getAllCategories());
+            model.addAttribute("pageTitle", "Edit Expense");
+            model.addAttribute("formAction", "/expenses/" + id);
+            
             return "expenses/form" + templateConfig.getTemplateSuffix();
         }
     }
@@ -387,5 +476,47 @@ public class ExpenseController {
     public ResponseEntity<Map<String, BigDecimal>> getMonthlySummaryApi() {
         Map<String, BigDecimal> summary = expenseService.getMonthlyExpenseSummary();
         return ResponseEntity.ok(summary);
+    }
+
+    // Private Helper Methods
+
+    /**
+     * Validate business rules for expense entities.
+     * 
+     * @param expense the expense to validate
+     * @param bindingResult the binding result to add errors to
+     */
+    private void validateExpenseBusinessRules(Expense expense, BindingResult bindingResult) {
+        // Business rule: Expense amount cannot exceed $10,000
+        if (expense.getAmount() != null && expense.getAmount().compareTo(new BigDecimal("10000.00")) > 0) {
+            bindingResult.rejectValue("amount", "expense.amount.tooHigh", 
+                "Expense amount cannot exceed $10,000.00");
+        }
+        
+        // Business rule: Expense date cannot be more than 1 year in the past
+        if (expense.getExpenseDate() != null) {
+            LocalDate oneYearAgo = LocalDate.now().minusYears(1);
+            if (expense.getExpenseDate().isBefore(oneYearAgo)) {
+                bindingResult.rejectValue("expenseDate", "expense.date.tooOld", 
+                    "Expense date cannot be more than one year in the past");
+            }
+        }
+        
+        // Business rule: Description cannot contain only numbers
+        if (expense.getDescription() != null && expense.getDescription().matches("^\\d+$")) {
+            bindingResult.rejectValue("description", "expense.description.onlyNumbers", 
+                "Description cannot contain only numbers");
+        }
+        
+        // Business rule: Weekend expenses over $500 require additional validation
+        if (expense.getExpenseDate() != null && expense.getAmount() != null) {
+            int dayOfWeek = expense.getExpenseDate().getDayOfWeek().getValue();
+            boolean isWeekend = dayOfWeek >= 6; // Saturday = 6, Sunday = 7
+            if (isWeekend && expense.getAmount().compareTo(new BigDecimal("500.00")) > 0) {
+                logger.info("High weekend expense flagged for review: {} - ${}", 
+                    expense.getDescription(), expense.getAmount());
+                // Note: In a real application, this might trigger a review workflow
+            }
+        }
     }
 }

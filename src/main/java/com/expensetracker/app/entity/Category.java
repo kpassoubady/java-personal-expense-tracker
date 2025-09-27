@@ -1,5 +1,7 @@
 package com.expensetracker.app.entity;
 
+import com.expensetracker.app.validation.ValidColor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ValidColor(message = "Please provide a valid hex color code (e.g., #FF0000)")
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "Color must be a valid hex color code")
     @Column(length = 7)
     private String color = "#007bff"; // Default blue color
@@ -42,6 +45,7 @@ public class Category {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Expense> expenses = new ArrayList<>();
 
     // Default constructor for JPA
