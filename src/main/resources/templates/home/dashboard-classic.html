@@ -34,25 +34,6 @@
         .table th {
             background-color: #f8f9fa;
         }
-        .template-info {
-            max-width: 300px;
-        }
-        @media (max-width: 768px) {
-            .template-info {
-                max-width: 100%;
-                margin-top: 1rem;
-            }
-            .d-flex.justify-content-between {
-                flex-direction: column;
-            }
-        }
-        .dropdown-header {
-            font-weight: 600;
-            color: #495057;
-        }
-        .btn-group .btn-sm {
-            font-size: 0.75rem;
-        }
     </style>
 </head>
 <body>
@@ -84,40 +65,6 @@
                             <i class="fas fa-tags me-1"></i>Categories
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="templateDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-eye me-1"></i>Template View
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="templateDropdown">
-                            <li><h6 class="dropdown-header"><i class="fas fa-receipt me-1"></i>Expenses</h6></li>
-                            <li><a class="dropdown-item" th:href="@{/expenses}">
-                                <i class="fas fa-list me-2"></i>Classic List
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/expenses?useNew=true}">
-                                <i class="fas fa-magic me-2"></i>Enhanced List
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/expenses/new}">
-                                <i class="fas fa-edit me-2"></i>Classic Form
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/expenses/new?useNew=true}">
-                                <i class="fas fa-sparkles me-2"></i>Enhanced Form
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><h6 class="dropdown-header"><i class="fas fa-tags me-1"></i>Categories</h6></li>
-                            <li><a class="dropdown-item" th:href="@{/categories}">
-                                <i class="fas fa-list me-2"></i>Classic List
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/categories?useNew=true}">
-                                <i class="fas fa-magic me-2"></i>Enhanced List
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/categories/new}">
-                                <i class="fas fa-edit me-2"></i>Classic Form
-                            </a></li>
-                            <li><a class="dropdown-item" th:href="@{/categories/new?useNew=true}">
-                                <i class="fas fa-sparkles me-2"></i>Enhanced Form
-                            </a></li>
-                        </ul>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -140,25 +87,9 @@
     <!-- Dashboard Header -->
     <div class="row mb-4">
         <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h2 mb-2">
-                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                    </h1>
-                    <p class="text-muted mb-0">Welcome to your expense tracking dashboard - Auto-reload testing! 🚀</p>
-                </div>
-                <div class="template-info">
-                    <div class="alert alert-info border-0 shadow-sm mb-0">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <div class="small">
-                                <strong>Template Views Available:</strong><br>
-                                <span class="text-muted">Choose between Classic and Enhanced templates for different experiences</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h1 class="h2 mb-3">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </h1>
         </div>
     </div>
 
@@ -238,14 +169,9 @@
                     <h5 class="mb-0">
                         <i class="fas fa-clock me-2"></i>Recent Expenses
                     </h5>
-                    <div class="btn-group" role="group">
-                        <a th:href="@{/expenses}" class="btn btn-outline-primary btn-sm" title="Classic List">
-                            <i class="fas fa-list me-1"></i>Classic
-                        </a>
-                        <a th:href="@{/expenses?useNew=true}" class="btn btn-primary btn-sm" title="Enhanced List">
-                            <i class="fas fa-magic me-1"></i>Enhanced
-                        </a>
-                    </div>
+                    <a th:href="@{/expenses}" class="btn btn-outline-primary btn-sm">
+                        View All
+                    </a>
                 </div>
                 <div class="card-body">
                     <div th:if="${recentExpenses != null and !#lists.isEmpty(recentExpenses)}">
@@ -287,18 +213,10 @@
         <!-- Category Summary -->
         <div class="col-lg-4 mb-4">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header">
                     <h5 class="mb-0">
                         <i class="fas fa-chart-pie me-2"></i>Spending by Category
                     </h5>
-                    <div class="btn-group" role="group">
-                        <a th:href="@{/categories}" class="btn btn-outline-secondary btn-sm" title="Classic Categories">
-                            <i class="fas fa-list me-1"></i>Classic
-                        </a>
-                        <a th:href="@{/categories?useNew=true}" class="btn btn-secondary btn-sm" title="Enhanced Categories">
-                            <i class="fas fa-magic me-1"></i>Enhanced
-                        </a>
-                    </div>
                 </div>
                 <div class="card-body">
                     <div th:if="${categorySummary != null and !#maps.isEmpty(categorySummary)}">
@@ -327,56 +245,15 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <!-- Add Expense Options -->
-                        <div class="col-md-6 mb-4">
-                            <h6 class="text-muted mb-3"><i class="fas fa-receipt me-1"></i>Add Expense</h6>
-                            <div class="d-grid gap-2">
-                                <a th:href="@{/expenses/new}" class="btn btn-outline-primary">
-                                    <i class="fas fa-plus me-2"></i>Classic Form
-                                </a>
-                                <a th:href="@{/expenses/new?useNew=true}" class="btn btn-primary">
-                                    <i class="fas fa-sparkles me-2"></i>Enhanced Form
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- Add Category Options -->
-                        <div class="col-md-6 mb-4">
-                            <h6 class="text-muted mb-3"><i class="fas fa-tags me-1"></i>Add Category</h6>
-                            <div class="d-grid gap-2">
-                                <a th:href="@{/categories/new}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-tag me-2"></i>Classic Form
-                                </a>
-                                <a th:href="@{/categories/new?useNew=true}" class="btn btn-secondary">
-                                    <i class="fas fa-magic me-2"></i>Enhanced Form
-                                </a>
-                            </div>
-                        </div>
-                        
-                        <!-- View Lists Options -->
                         <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-3"><i class="fas fa-eye me-1"></i>View Expenses</h6>
-                            <div class="d-grid gap-2">
-                                <a th:href="@{/expenses}" class="btn btn-outline-info">
-                                    <i class="fas fa-list me-2"></i>Classic List
-                                </a>
-                                <a th:href="@{/expenses?useNew=true}" class="btn btn-info">
-                                    <i class="fas fa-table me-2"></i>Enhanced List
-                                </a>
-                            </div>
+                            <a th:href="@{/expenses/new}" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-plus me-2"></i>Add New Expense
+                            </a>
                         </div>
-                        
-                        <!-- View Categories Options -->
                         <div class="col-md-6 mb-3">
-                            <h6 class="text-muted mb-3"><i class="fas fa-eye me-1"></i>View Categories</h6>
-                            <div class="d-grid gap-2">
-                                <a th:href="@{/categories}" class="btn btn-outline-warning">
-                                    <i class="fas fa-list me-2"></i>Classic List
-                                </a>
-                                <a th:href="@{/categories?useNew=true}" class="btn btn-warning">
-                                    <i class="fas fa-th-large me-2"></i>Enhanced Cards
-                                </a>
-                            </div>
+                            <a th:href="@{/categories/new}" class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="fas fa-tag me-2"></i>Add Category
+                            </a>
                         </div>
                     </div>
                 </div>
