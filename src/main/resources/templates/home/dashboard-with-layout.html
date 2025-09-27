@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" 
+      xmlns:th="http://www.thymeleaf.org" 
+      th:replace="~{layout/main :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Dashboard Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">
+                <i class="fas fa-tachometer-alt text-primary me-2"></i>Dashboard
+            </h1>
+            <div class="d-flex gap-2">
+                <a th:href="@{/expenses/form}" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i>Add Expense
+                </a>
+                <a th:href="@{/categories/form}" class="btn btn-outline-primary">
+                    <i class="fas fa-tag me-1"></i>Add Category
+                </a>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div th:if="${hasErrors}" class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Data Loading Issues</h4>
+                    <p class="mb-0">Some dashboard data could not be loaded. Please try refreshing the page or contact support if the issue persists.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100">
+                    <div class="card-body text-center">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-value" th:text="${totalExpenses != null ? #numbers.formatCurrency(totalExpenses) : '$0.00'}">
+                            $0.00
+                        </div>
+                        <div class="stat-label">Total Expenses</div>
+                        <div th:if="${monthlyTrends != null && monthlyTrends.currentMonthTotal != null && monthlyTrends.percentageChange != null}" 
+                             class="mt-2">
+                            <small th:classappend="${monthlyTrends.percentageChange >= 0 ? 'text-warning' : 'text-success'}">
+                                <i th:class="${monthlyTrends.percentageChange >= 0 ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}" class="me-1"></i>
+                                <span th:text="${#numbers.formatDecimal(#math.abs(monthlyTrends.percentageChange), 1, 1) + '%'}">0.0%</span>
+                                vs last month
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="card-body text-center text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-value" th:text="${expenseCount != null ? expenseCount : '0'}">
+                            0
+                        </div>
+                        <div class="stat-label">Total Transactions</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="card-body text-center text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-value" th:text="${categoryCount != null ? categoryCount : '0'}">
+                            0
+                        </div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="card stat-card h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="card-body text-center text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="stat-value" th:text="${averageExpense != null ? #numbers.formatCurrency(averageExpense) : '$0.00'}">
+                            $0.00
+                        </div>
+                        <div class="stat-label">Average Expense</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="row mb-4">
+            <!-- Category Breakdown Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Expenses by Category
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${categoryStats != null && !categoryStats.empty}" class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                        <div th:if="${categoryStats == null || categoryStats.empty}" class="text-center text-muted py-5">
+                            <i class="fas fa-chart-pie fa-3x mb-3 opacity-50"></i>
+                            <p>No expense data available</p>
+                            <a th:href="@{/expenses/form}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Add Your First Expense
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Trends Chart -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-line me-2"></i>Monthly Trends
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${monthlyTrends != null}" class="chart-container">
+                            <canvas id="trendsChart"></canvas>
+                        </div>
+                        <div th:if="${monthlyTrends == null}" class="text-center text-muted py-5">
+                            <i class="fas fa-chart-line fa-3x mb-3 opacity-50"></i>
+                            <p>Insufficient data for trends</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Statistics and Recent Expenses -->
+        <div class="row">
+            <!-- Category Statistics -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tags me-2"></i>Category Breakdown
+                        </h5>
+                        <a th:href="@{/categories}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${categoryStats != null && !categoryStats.empty}">
+                            <div th:each="stat : ${categoryStats}" class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="category-color me-2" th:style="'background-color: ' + ${stat.color}"></span>
+                                    <div>
+                                        <div class="fw-medium" th:text="${stat.name}">Category Name</div>
+                                        <small class="text-muted">
+                                            <span th:text="${stat.expenseCount}">0</span> expenses
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold" th:text="${#numbers.formatCurrency(stat.totalAmount)}">$0.00</div>
+                                    <small class="text-muted" th:text="${#numbers.formatDecimal(stat.percentage, 1, 1) + '%'}">0.0%</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${categoryStats == null || categoryStats.empty}" class="text-center text-muted py-4">
+                            <i class="fas fa-tags fa-3x mb-3 opacity-50"></i>
+                            <p>No categories with expenses found</p>
+                            <a th:href="@{/categories/form}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Create Category
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Expenses -->
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>Recent Expenses
+                        </h5>
+                        <a th:href="@{/expenses}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${recentExpenses != null && !recentExpenses.empty}">
+                            <div th:each="expense : ${recentExpenses}" class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="category-color me-2" th:style="'background-color: ' + ${expense.category.color}"></span>
+                                    <div>
+                                        <div class="fw-medium" th:text="${expense.description}">Expense Description</div>
+                                        <small class="text-muted">
+                                            <span th:text="${expense.category.name}">Category</span> • 
+                                            <span th:text="${#temporals.format(expense.expenseDate, 'MMM dd, yyyy')}">Date</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="expense-amount" th:text="${#numbers.formatCurrency(expense.amount)}">$0.00</div>
+                            </div>
+                        </div>
+                        <div th:if="${recentExpenses == null || recentExpenses.empty}" class="text-center text-muted py-4">
+                            <i class="fas fa-receipt fa-3x mb-3 opacity-50"></i>
+                            <p>No recent expenses found</p>
+                            <a th:href="@{/expenses/form}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Add Expense
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page-specific Scripts -->
+    <th:block th:fragment="scripts">
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+        
+        <script th:inline="javascript">
+        $(document).ready(function() {
+            // Category Breakdown Pie Chart
+            const categoryData = /*[[${categoryStats}]]*/ [];
+            if (categoryData && categoryData.length > 0) {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: categoryData.map(stat => stat.name),
+                        datasets: [{
+                            data: categoryData.map(stat => stat.totalAmount),
+                            backgroundColor: categoryData.map(stat => stat.color),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = new Intl.NumberFormat('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        }).format(context.parsed);
+                                        const percentage = ((context.parsed / context.dataset.data.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Monthly Trends Line Chart
+            const monthlyTrends = /*[[${monthlyTrends}]]*/ null;
+            if (monthlyTrends && monthlyTrends.currentMonthTotal !== undefined) {
+                const ctx = document.getElementById('trendsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Previous Month', 'Current Month'],
+                        datasets: [{
+                            label: 'Expenses',
+                            data: [monthlyTrends.previousMonthTotal || 0, monthlyTrends.currentMonthTotal || 0],
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#007bff',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return new Intl.NumberFormat('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        }).format(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return new Intl.NumberFormat('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD'
+                                        }).format(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        </script>
+    </th:block>
+</body>
+</html>

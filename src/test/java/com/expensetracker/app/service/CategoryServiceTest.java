@@ -4,8 +4,6 @@ import com.expensetracker.app.entity.Category;
 import com.expensetracker.app.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -23,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
 @Rollback
-@ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
     @Autowired
