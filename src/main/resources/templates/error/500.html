@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(title='Server Error - 500', content=~{::content})}">
+
+<div th:fragment="content" class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Error Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-danger text-white text-center">
+                    <div class="error-icon mb-3">
+                        <i class="fas fa-server fa-4x opacity-75"></i>
+                    </div>
+                    <h1 class="card-title mb-2">500 - Internal Server Error</h1>
+                    <p class="card-text mb-0">Something went wrong on our end</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Error Details -->
+                    <div class="alert alert-light border" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                            What happened?
+                        </h5>
+                        <p class="mb-2" th:text="${errorMessage}">An unexpected error occurred while processing your request.</p>
+                        <hr class="my-3">
+                        <p class="mb-2 text-muted">
+                            <small>
+                                <strong>Requested URL:</strong> 
+                                <code th:text="${requestUrl}">Unknown</code>
+                            </small>
+                        </p>
+                        <div th:if="${errorDetails}" class="mt-2">
+                            <p class="mb-0 text-muted">
+                                <small>
+                                    <strong>Error Details:</strong>
+                                    <code th:text="${errorDetails}"></code>
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Recovery Actions -->
+                    <div class="row mt-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-redo fa-2x text-warning mb-3"></i>
+                                    <h6 class="card-title">Try Again</h6>
+                                    <p class="card-text text-muted small">Reload the page to try again</p>
+                                    <button onclick="window.location.reload()" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-sync-alt me-1"></i>Reload
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-home fa-2x text-primary mb-3"></i>
+                                    <h6 class="card-title">Go to Dashboard</h6>
+                                    <p class="card-text text-muted small">Return to the main dashboard</p>
+                                    <a href="/" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-arrow-left me-1"></i>Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Troubleshooting -->
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-muted">
+                            <i class="fas fa-tools me-2"></i>
+                            Troubleshooting
+                        </h6>
+                        <ul class="list-unstyled mb-0 text-muted small">
+                            <li class="mb-1">• This is a temporary problem - please try again in a few minutes</li>
+                            <li class="mb-1">• If the problem persists, try clearing your browser cache</li>
+                            <li class="mb-1">• Use the navigation menu to access other parts of the application</li>
+                            <li>• The error has been logged and will be investigated</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

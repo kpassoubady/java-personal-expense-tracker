@@ -9,6 +9,10 @@
     <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Dashboard CSS -->
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
     <style>
         .navbar-brand {
@@ -52,6 +56,13 @@
         }
         .btn-group .btn-sm {
             font-size: 0.75rem;
+        }
+        .chart-container canvas {
+            max-height: 300px;
+        }
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
         }
     </style>
 </head>
@@ -316,6 +327,65 @@
         </div>
     </div>
 
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <!-- Spending by Category Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Category Distribution
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="window.dashboard && window.dashboard.refreshPieChart()" title="Refresh Chart">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                        <a th:href="@{/categories}" class="btn btn-outline-secondary btn-sm" title="Manage Categories">
+                            <i class="fas fa-cog me-1"></i>Manage
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="expensePieChart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="expensePieChartEmpty" class="text-center py-3" style="display: none;">
+                        <i class="fas fa-chart-pie fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No expense data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monthly Trends Chart -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Monthly Expense Trends
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="window.dashboard && window.dashboard.refreshBarChart()" title="Refresh Chart">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh
+                        </button>
+                        <a th:href="@{/expenses}" class="btn btn-outline-secondary btn-sm" title="View All Expenses">
+                            <i class="fas fa-list me-1"></i>View All
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="monthlyTrendChart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="monthlyTrendChartEmpty" class="text-center py-3" style="display: none;">
+                        <i class="fas fa-chart-bar fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-0">No trend data available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="row">
         <div class="col">
@@ -387,5 +457,17 @@
     <!-- Bootstrap JS -->
     <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <!-- Dashboard JavaScript -->
+    <script th:src="@{/js/dashboard.js}"></script>
+    
+    <!-- Initialize Dashboard -->
+    <script>
+        // Initialize dashboard when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create global dashboard instance
+            window.dashboard = new ExpenseDashboard();
+            console.log('Dashboard initialized successfully');
+        });
+    </script>
 </body>
 </html>

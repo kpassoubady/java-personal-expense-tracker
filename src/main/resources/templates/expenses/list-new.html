@@ -5,6 +5,7 @@
 
 <head>
     <title>Expenses | Expense Tracker</title>
+    <link rel="stylesheet" href="/css/expenses.css">
     <style>
         .expense-table {
             background: white;
@@ -349,7 +350,7 @@
                                             <button type="button" 
                                                     class="btn btn-outline-danger" 
                                                     title="Delete expense"
-                                                    th:onclick="'confirmDelete(' + ${expense.id} + ', \'' + ${expense.description} + '\', \'' + ${#numbers.formatDecimal(expense.amount, 1, 2)} + '\')'">
+                                                    th:attr="data-delete-expense=${expense.id},data-expense-name=${expense.description},data-expense-amount=${#numbers.formatDecimal(expense.amount, 1, 2)}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -586,7 +587,7 @@
                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                     <h4 class="text-muted">No expenses found</h4>
                     <p class="text-muted mb-4">Start tracking your expenses by adding your first entry.</p>
-                    <a th:href="@{/expenses/form}" class="btn btn-primary">
+                    <a th:href="@{/expenses/new}" class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>Add Your First Expense
                     </a>
                 </div>
@@ -644,9 +645,7 @@
                                             </a>
                                             <button type="button" class="btn btn-outline-danger" 
                                                     title="Delete"
-                                                    onclick="confirmDelete(this)"
-                                                    th:data-id="${expense.id}"
-                                                    th:data-description="${expense.description}">
+                                                    th:attr="data-delete-expense=${expense.id},data-expense-name=${expense.description},data-expense-amount=${#numbers.formatDecimal(expense.amount, 1, 2)}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -671,12 +670,12 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6 mb-2">
-                                <a th:href="@{/expenses/form}" class="btn btn-success w-100">
+                                <a th:href="@{/expenses/new}" class="btn btn-success w-100">
                                     <i class="fas fa-plus me-2"></i>Add Expense
                                 </a>
                             </div>
                             <div class="col-lg-3 col-md-6 mb-2">
-                                <a th:href="@{/categories/form}" class="btn btn-primary w-100">
+                                <a th:href="@{/categories/new}" class="btn btn-primary w-100">
                                     <i class="fas fa-tag me-2"></i>Add Category
                                 </a>
                             </div>
@@ -699,31 +698,38 @@
 
     <!-- Page-specific Scripts -->
     <th:block th:fragment="scripts">
+        <script src="/js/expenses.js"></script>
         <script>
+        // Legacy function for backward compatibility
         function confirmDelete(button) {
             const expenseId = button.dataset.id;
             const description = button.dataset.description;
+            const amount = button.dataset.amount || '0.00';
             
-            if (confirm(`Are you sure you want to delete the expense "${description}"?\n\nThis action cannot be undone.`)) {
-                // Create and submit a hidden form for DELETE request
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/expenses/delete/${expenseId}`;
-                
-                // Add CSRF token if available
-                const csrfToken = document.querySelector('meta[name="_csrf"]');
-                const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
-                
-                if (csrfToken && csrfHeader) {
-                    const csrfInput = document.createElement('input');
-                    csrfInput.type = 'hidden';
-                    csrfInput.name = csrfToken.content;
-                    csrfInput.value = csrfHeader.content;
-                    form.appendChild(csrfInput);
+            // Use the new expense manager if available
+            if (window.expenseManager) {
+                window.expenseManager.showDeleteConfirmation(expenseId, description, amount);
+            } else {
+                // Fallback to simple confirm dialog
+                if (confirm(`Are you sure you want to delete the expense "${description}"?\n\nThis action cannot be undone.`)) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/expenses/delete/${expenseId}`;
+                    
+                    const csrfToken = document.querySelector('meta[name="_csrf"]');
+                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]');
+                    
+                    if (csrfToken && csrfHeader) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = csrfToken.content;
+                        csrfInput.value = csrfHeader.content;
+                        form.appendChild(csrfInput);
+                    }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
                 }
-                
-                document.body.appendChild(form);
-                form.submit();
             }
         }
 
