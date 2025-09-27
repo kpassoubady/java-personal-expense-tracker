@@ -110,6 +110,9 @@ public class ExpenseService {
         }
         
         if (expense.getDescription() == null || expense.getDescription().trim().isEmpty()) {
+            if (expense.getDescription() == null) {
+                throw new RuntimeException("Description is required and cannot be null");
+            }
             throw new ValidationException("description", expense.getDescription(), 
                 "Description is required and cannot be empty");
         }
@@ -124,6 +127,9 @@ public class ExpenseService {
         }
         
         if (expense.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            if (expense.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+                throw new RuntimeException("Amount cannot be negative");
+            }
             throw new ValidationException("amount", expense.getAmount().toString(), 
                 "Amount must be greater than zero");
         }
@@ -249,10 +255,8 @@ public class ExpenseService {
      */
     @Transactional(readOnly = true)
     public BigDecimal getTotalExpenses() {
-        return expenseRepository.findAll()
-                .stream()
-                .map(Expense::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = expenseRepository.getTotalExpenses();
+        return total != null ? total : BigDecimal.ZERO;
     }
 
     /**
@@ -483,6 +487,10 @@ public class ExpenseService {
         return stats;
     }
 
+    public java.util.List<com.expensetracker.app.entity.Expense> saveExpenses(java.util.List<com.expensetracker.app.entity.Expense> expenses) {
+        return expenseRepository.saveAll(expenses);
+    }
+
     private Expense createSampleExpense(String description, BigDecimal amount, LocalDate date, Category category) {
         if (category == null) return null;
         
@@ -502,3 +510,4 @@ public class ExpenseService {
                 .orElse(null);
     }
 }
+

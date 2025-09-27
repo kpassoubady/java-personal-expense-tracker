@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -220,8 +221,35 @@ public class CategoryService {
     }
 
     /**
+     * Get category statistics for reporting.
+     *
+     * @return List of arrays containing category statistics [name, expenseCount, totalAmount]
+     */
+    @Transactional(readOnly = true)
+    public List<Object[]> getCategoryStatistics() {
+        return categoryRepository.getCategoryStatistics();
+    }
+
+    /**
+     * Create default categories if none exist.
+     */
+    public void createDefaultCategories() {
+        if (categoryRepository.count() == 0) {
+            List<Category> defaultCategories = Arrays.asList(
+                new Category("Food & Dining", "Restaurants, groceries, food delivery", "#28a745", "fas fa-utensils"),
+                new Category("Transportation", "Car, gas, public transport, taxi", "#007bff", "fas fa-car"),
+                new Category("Entertainment", "Movies, games, concerts, hobbies", "#e83e8c", "fas fa-film"),
+                new Category("Bills & Utilities", "Rent, electricity, water, internet", "#fd7e14", "fas fa-bolt"),
+                new Category("Personal Care", "Health, gym, beauty, medicine", "#dc3545", "fas fa-heart")
+            );
+
+            categoryRepository.saveAll(defaultCategories);
+        }
+    }
+
+    /**
      * Get total number of categories.
-     * 
+     *
      * @return the count of categories
      */
     @Transactional(readOnly = true)
@@ -230,74 +258,8 @@ public class CategoryService {
     }
 
     /**
-     * Create default categories if none exist.
-     * This is useful for initial setup or demo data.
-     */
-    public void createDefaultCategories() {
-        if (categoryRepository.count() == 0) {
-            // Create default categories
-            Category[] defaultCategories = {
-                new Category("Food & Dining", "Meals, groceries, restaurants", "#FF6B6B", "🍽️"),
-                new Category("Transportation", "Gas, public transport, car maintenance", "#4ECDC4", "🚗"),
-                new Category("Entertainment", "Movies, games, hobbies", "#45B7D1", "🎬"),
-                new Category("Shopping", "Clothing, electronics, general purchases", "#96CEB4", "🛒"),
-                new Category("Bills & Utilities", "Rent, electricity, phone, internet", "#FFEAA7", "💡"),
-                new Category("Healthcare", "Medical, dental, pharmacy", "#DDA0DD", "🏥"),
-                new Category("Education", "Books, courses, training", "#98D8C8", "📚"),
-                new Category("Personal Care", "Haircut, cosmetics, gym", "#FECA57", "💄"),
-                new Category("Travel", "Flights, hotels, vacation expenses", "#FF9FF3", "✈️"),
-                new Category("Other", "Miscellaneous expenses", "#95A5A6", "📦")
-            };
-
-            for (Category category : defaultCategories) {
-                categoryRepository.save(category);
-            }
-        }
-    }
-
-    /**
-     * Get categories with their expense statistics.
-     * 
-     * @return List of categories with expense counts and totals
-     */
-    @Transactional(readOnly = true)
-    public List<Object[]> getCategoryStatistics() {
-        return categoryRepository.getCategoryStatistics();
-    }
-
-    /**
-     * Get categories that have at least one expense.
-     * 
-     * @return List of categories with expenses
-     */
-    @Transactional(readOnly = true)
-    public List<Category> getCategoriesWithExpenses() {
-        return categoryRepository.findCategoriesWithExpenses();
-    }
-
-    /**
-     * Get categories that have no expenses.
-     * 
-     * @return List of categories without expenses
-     */
-    @Transactional(readOnly = true)
-    public List<Category> getCategoriesWithoutExpenses() {
-        return categoryRepository.findCategoriesWithoutExpenses();
-    }
-
-    /**
-     * Get categories ordered by expense count (most used first).
-     * 
-     * @return List of categories ordered by usage
-     */
-    @Transactional(readOnly = true)
-    public List<Category> getCategoriesByUsage() {
-        return categoryRepository.findAllOrderByExpenseCountDesc();
-    }
-
-    /**
      * Search categories by name or description.
-     * 
+     *
      * @param searchText the text to search for
      * @return List of matching categories
      * @throws ValidationException if searchText is null or empty

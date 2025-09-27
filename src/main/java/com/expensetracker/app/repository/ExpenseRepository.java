@@ -158,4 +158,20 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      * @return the count of expenses within the date range
      */
     long countByExpenseDateBetween(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * Calculate total expenses across all categories.
+     *
+     * @return the sum of all expenses
+     */
+    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e")
+    BigDecimal getTotalExpenses();
+
+    /**
+     * Get total expenses grouped by category for reporting.
+     *
+     * @return List of arrays containing [category_name, total_amount] for each category
+     */
+    @Query("SELECT e.category.name, SUM(e.amount) FROM Expense e GROUP BY e.category.name")
+    List<Object[]> getExpensesByCategory();
 }
