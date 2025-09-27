@@ -1,5 +1,6 @@
 package com.expensetracker.app.controller;
 
+import com.expensetracker.app.config.TemplateConfig;
 import com.expensetracker.app.entity.Expense;
 import com.expensetracker.app.service.CategoryService;
 import com.expensetracker.app.service.ExpenseService;
@@ -32,6 +33,9 @@ public class HomeController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private TemplateConfig templateConfig;
 
     /**
      * Display the main dashboard/home page with comprehensive analytics.
@@ -121,7 +125,7 @@ public class HomeController {
             logger.info("Dashboard data loaded successfully - Total: {}, Count: {}, Categories: {}", 
                        totalExpenses, expenseCount, categoryCount);
             
-            return "home/dashboard";
+            return "home/dashboard" + templateConfig.getTemplateSuffix();
             
         } catch (Exception e) {
             logger.error("Error loading dashboard data", e);
@@ -144,9 +148,10 @@ public class HomeController {
             model.addAttribute("monthlyChange", BigDecimal.ZERO);
             model.addAttribute("changeDirection", "neutral");
             model.addAttribute("currentMonthName", LocalDate.now().getMonth().toString());
+            model.addAttribute("hasErrors", true);
             
             // Still return the dashboard view but in error state
-            return "home/dashboard";
+            return "home/dashboard" + templateConfig.getTemplateSuffix();
         }
     }
 
