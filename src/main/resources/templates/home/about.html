@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Personal Expense Tracker</title>
+    
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+        .tech-stack {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-wallet me-2"></i>Expense Tracker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories">
+                            <i class="fas fa-tags me-1"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/expenses">
+                            <i class="fas fa-receipt me-1"></i>Expenses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/about">
+                            <i class="fas fa-info-circle me-1"></i>About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- About Header -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-wallet text-primary me-3"></i>
+                    Personal Expense Tracker
+                </h1>
+                <p class="lead text-muted">A comprehensive solution for managing your personal finances</p>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="h3 mb-4 text-center">Key Features</h2>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-chart-pie feature-icon"></i>
+                    <h4>Dashboard Analytics</h4>
+                    <p class="text-muted">Comprehensive dashboard with expense summaries, monthly trends, and category breakdowns with interactive charts.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-tags feature-icon"></i>
+                    <h4>Category Management</h4>
+                    <p class="text-muted">Organize expenses with customizable categories, including color coding and icons for easy identification.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-receipt feature-icon"></i>
+                    <h4>Expense Tracking</h4>
+                    <p class="text-muted">Record and track expenses with detailed information including date, amount, category, and descriptions.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-search feature-icon"></i>
+                    <h4>Advanced Search</h4>
+                    <p class="text-muted">Filter and search expenses by date range, category, amount, and description with powerful search capabilities.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h4>Responsive Design</h4>
+                    <p class="text-muted">Fully responsive interface that works seamlessly on desktop, tablet, and mobile devices.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="fas fa-code feature-icon"></i>
+                    <h4>REST API</h4>
+                    <p class="text-muted">Complete RESTful API for integration with external applications and advanced analytics.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="h3 mb-4 text-center">Technology Stack</h2>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="tech-stack">
+                    <h4><i class="fas fa-server me-2 text-success"></i>Backend</h4>
+                    <ul class="list-unstyled">
+                        <li><strong>Java 21:</strong> Modern Java runtime with latest features</li>
+                        <li><strong>Spring Boot 3.2.3:</strong> Application framework and dependency injection</li>
+                        <li><strong>Spring Data JPA:</strong> Data persistence and repository pattern</li>
+                        <li><strong>Hibernate:</strong> Object-relational mapping (ORM)</li>
+                        <li><strong>H2 Database:</strong> In-memory database for development</li>
+                        <li><strong>Maven:</strong> Build automation and dependency management</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="tech-stack">
+                    <h4><i class="fas fa-palette me-2 text-info"></i>Frontend</h4>
+                    <ul class="list-unstyled">
+                        <li><strong>Thymeleaf:</strong> Server-side template engine</li>
+                        <li><strong>Bootstrap 5:</strong> Responsive CSS framework</li>
+                        <li><strong>Font Awesome:</strong> Icons and visual elements</li>
+                        <li><strong>Chart.js:</strong> Interactive data visualization</li>
+                        <li><strong>HTML5 & CSS3:</strong> Modern web standards</li>
+                        <li><strong>JavaScript:</strong> Dynamic user interactions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Information -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="h3 mb-4 text-center">RESTful API Endpoints</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Category API</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><code>GET /api/categories</code> - List all categories</li>
+                            <li><code>GET /api/categories/{id}</code> - Get category by ID</li>
+                            <li><code>POST /api/categories</code> - Create category</li>
+                            <li><code>PUT /api/categories/{id}</code> - Update category</li>
+                            <li><code>DELETE /api/categories/{id}</code> - Delete category</li>
+                            <li><code>GET /api/categories/search</code> - Search categories</li>
+                            <li><code>GET /api/categories/statistics</code> - Category stats</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Expense API</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li><code>GET /api/expenses</code> - List all expenses</li>
+                            <li><code>GET /api/expenses/{id}</code> - Get expense by ID</li>
+                            <li><code>POST /api/expenses</code> - Create expense</li>
+                            <li><code>PUT /api/expenses/{id}</code> - Update expense</li>
+                            <li><code>DELETE /api/expenses/{id}</code> - Delete expense</li>
+                            <li><code>GET /api/expenses/search</code> - Advanced search</li>
+                            <li><code>GET /api/expenses/analytics</code> - Analytics data</li>
+                            <li><code>GET /api/expenses/category/{id}</code> - By category</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="h3 mb-4 text-center">Quick Actions</h2>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/" class="btn btn-primary w-100">
+                    <i class="fas fa-home me-2"></i>Dashboard
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/expenses/form" class="btn btn-success w-100">
+                    <i class="fas fa-plus me-2"></i>Add Expense
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/categories/form" class="btn btn-info w-100">
+                    <i class="fas fa-tag me-2"></i>Add Category
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/api/expenses/analytics" class="btn btn-secondary w-100" target="_blank">
+                    <i class="fas fa-chart-bar me-2"></i>API Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">
+                        &copy; 2025 Personal Expense Tracker
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">
+                        Built with <i class="fas fa-heart text-danger"></i> using Spring Boot & Bootstrap
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
