@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Test Infrastructure Issues",
+    "description": "Issues related to test infrastructure, browser, or WebDriver",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(timeout|connection|network|webdriver|browser).*"
+  },
+  {
+    "name": "Application Issues",
+    "description": "Issues with the application under test",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*(assertion|expected|actual).*"
+  },
+  {
+    "name": "Element Locator Issues",
+    "description": "Issues with finding web elements",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(no such element|element not found|unable to locate).*"
+  },
+  {
+    "name": "Environment Issues",
+    "description": "Issues with test environment setup or configuration",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(setup|configuration|environment).*"
+  },
+  {
+    "name": "Data Issues",
+    "description": "Issues with test data or database",
+    "matchedStatuses": ["broken"],
+    "messageRegex": ".*(data|database|sql).*"
+  }
+]
