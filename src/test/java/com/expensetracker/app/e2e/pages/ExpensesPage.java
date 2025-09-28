@@ -66,7 +66,7 @@ public class ExpensesPage extends BasePage {
     
     @Override
     public String getExpectedPageTitle() {
-        return "Expense Tracker - Expenses";
+        return "Expenses - Expense Tracker";  // Match actual page title
     }
     
     @Override

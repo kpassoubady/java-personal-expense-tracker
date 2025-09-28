@@ -104,7 +104,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.15.0</version>
+            <version>4.26.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -112,7 +112,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.6.2</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -233,27 +233,12 @@
                 </executions>
             </plugin>
 
-            <!-- Surefire Plugin for running tests -->
+            <!-- Default Surefire Plugin Configuration - Minimal to avoid conflicts -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
-                <configuration>
-                    <!-- Force TestNG provider -->
-                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <systemPropertyVariables>
-                        <browser>${browser}</browser>
-                        <headless>${headless}</headless>
-                        <environment>${environment}</environment>
-                        <BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
-                        <BUILD_URL>${BUILD_URL}</BUILD_URL>
-                        <GIT_BRANCH>${GIT_BRANCH}</GIT_BRANCH>
-                        <GIT_COMMIT>${GIT_COMMIT}</GIT_COMMIT>
-                    </systemPropertyVariables>
-                </configuration>
+                <!-- Minimal default configuration - profiles will override -->
             </plugin>
 
             <!-- Allure Maven Plugin -->
@@ -330,4 +315,231 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <!-- Maven Profiles for Different Test Execution Strategies -->
+    <profiles>
+        <!-- Profile for Unit Tests (JUnit) -->
+        <profile>
+            <id>unit-tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*Test.java</include>
+                                <include>**/*Tests.java</include>
+                            </includes>
+                            <excludes>
+                                <!-- Exclude E2E tests from unit test execution -->
+                                <exclude>**/e2e/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile for Integration Tests (JUnit) -->
+        <profile>
+            <id>integration-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <configuration>
+                            <includes>
+                                <include>**/*IntegrationTest.java</include>
+                                <include>**/*IT.java</include>
+                            </includes>
+                            <excludes>
+                                <!-- Exclude E2E tests from integration test execution -->
+                                <exclude>**/e2e/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile for E2E Tests (TestNG) -->
+        <profile>
+            <id>e2e-tests</id>
+            <properties>
+                <!-- Default E2E test properties -->
+                <browser>chrome</browser>
+                <headless>false</headless>
+                <environment>local</environment>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <configuration>
+                            <!-- Explicitly exclude JUnit provider -->
+                            <junitArtifactName>none</junitArtifactName>
+                            <!-- Force TestNG provider for E2E tests -->
+                            <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>src/test/resources/testng/testng.xml</suiteXmlFile>
+                            </suiteXmlFiles>
+                            <includes>
+                                <include>**/e2e/**/*Test*.java</include>
+                            </includes>
+                            <excludes>
+                                <!-- Exclude all JUnit tests -->
+                                <exclude>**/service/**</exclude>
+                                <exclude>**/repository/**</exclude>
+                                <exclude>**/controller/**</exclude>
+                            </excludes>
+                            <systemPropertyVariables>
+                                <browser>${browser}</browser>
+                                <headless>${headless}</headless>
+                                <environment>${environment}</environment>
+                                <BUILD_NUMBER>${BUILD_NUMBER}</BUILD_NUMBER>
+                                <BUILD_URL>${BUILD_URL}</BUILD_URL>
+                                <GIT_BRANCH>${GIT_BRANCH}</GIT_BRANCH>
+                                <GIT_COMMIT>${GIT_COMMIT}</GIT_COMMIT>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile for E2E Smoke Tests only -->
+        <!-- NOTE: Due to Maven Surefire conflicts with mixed JUnit/TestNG, 
+             use ./run-smoke-tests.sh script for reliable smoke test execution -->
+        <profile>
+            <id>e2e-smoke</id>
+            <properties>
+                <browser>chrome</browser>
+                <headless>false</headless>
+                <environment>local</environment>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- Skip Surefire tests to avoid running all tests -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                        </configuration>
+                    </plugin>
+                    <!-- Use exec plugin to run TestNG directly -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <mainClass>org.testng.TestNG</mainClass>
+                            <includeProjectDependencies>true</includeProjectDependencies>
+                            <includePluginDependencies>true</includePluginDependencies>
+                            <arguments>
+                                <argument>-d</argument>
+                                <argument>target/testng-reports</argument>
+                                <argument>src/test/resources/testng/smoke-testng.xml</argument>
+                            </arguments>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>browser</key>
+                                    <value>${browser}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>headless</key>
+                                    <value>${headless}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>environment</key>
+                                    <value>${environment}</value>
+                                </systemProperty>
+                            </systemProperties>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.testng</groupId>
+                                <artifactId>testng</artifactId>
+                                <version>7.8.0</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Profile for All Tests (Unit + Integration + E2E) -->
+        <profile>
+            <id>all-tests</id>
+            <build>
+                <plugins>
+                    <!-- First run JUnit tests -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>3.2.2</version>
+                        <executions>
+                            <execution>
+                                <id>unit-and-integration-tests</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/*Test.java</include>
+                                        <include>**/*Tests.java</include>
+                                        <include>**/*IntegrationTest.java</include>
+                                        <include>**/*IT.java</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/e2e/**</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>e2e-tests</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <configuration>
+                                    <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                                    <suiteXmlFiles>
+                                        <suiteXmlFile>src/test/resources/testng/testng.xml</suiteXmlFile>
+                                    </suiteXmlFiles>
+                                    <includes>
+                                        <include>**/e2e/**</include>
+                                    </includes>
+                                    <systemPropertyVariables>
+                                        <browser>${browser}</browser>
+                                        <headless>${headless}</headless>
+                                        <environment>${environment}</environment>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
