@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ExpenseTrackerE2ETestSuite" parallel="classes" thread-count="2" verbose="1">
+    
+    <parameter name="browser" value="chrome"/>
+    <parameter name="headless" value="false"/>
+    <parameter name="environment" value="local"/>
+    
+    <!-- Listeners for test reporting and screenshots -->
+    <listeners>
+        <listener class-name="com.expensetracker.app.e2e.listeners.ExtentReportListener"/>
+        <listener class-name="com.expensetracker.app.e2e.listeners.ScreenshotOnFailureListener"/>
+        <listener class-name="com.expensetracker.app.e2e.listeners.TestExecutionTimeLogger"/>
+        <listener class-name="com.expensetracker.app.e2e.listeners.RetryAnalyzer"/>
+        <listener class-name="com.expensetracker.app.e2e.reporting.ComprehensiveReportingListener"/>
+    </listeners>
+    
+    <!-- Smoke Tests - Critical functionality -->
+    <test name="SmokeTests" enabled="true">
+        <parameter name="testType" value="smoke"/>
+        <classes>
+            <class name="com.expensetracker.app.e2e.tests.smoke.LoginSmokeTest"/>
+            <class name="com.expensetracker.app.e2e.tests.smoke.DashboardSmokeTest"/>
+        </classes>
+    </test>
+    
+    <!-- Regression Tests - Full functionality -->
+    <test name="RegressionTests" enabled="true">
+        <parameter name="testType" value="regression"/>
+        <classes>
+            <class name="com.expensetracker.app.e2e.tests.regression.ExpenseManagementTest"/>
+            <class name="com.expensetracker.app.e2e.tests.regression.CategoryManagementTest"/>
+            <class name="com.expensetracker.app.e2e.tests.regression.DashboardAnalyticsTest"/>
+            <class name="com.expensetracker.app.e2e.tests.regression.NavigationTest"/>
+        </classes>
+    </test>
+    
+    <!-- API Tests - Backend validation -->
+    <test name="ApiTests" enabled="true">
+        <parameter name="testType" value="api"/>
+        <classes>
+            <class name="com.expensetracker.app.e2e.tests.api.ExpenseApiTest"/>
+            <class name="com.expensetracker.app.e2e.tests.api.CategoryApiTest"/>
+        </classes>
+    </test>
+    
+    <!-- Cross-browser Tests -->
+    <test name="CrossBrowserTests" enabled="false">
+        <parameter name="testType" value="crossbrowser"/>
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.expensetracker.app.e2e.tests.crossbrowser.BasicFunctionalityTest"/>
+        </classes>
+    </test>
+    
+    <!-- Mobile Tests -->
+    <test name="MobileTests" enabled="false">
+        <parameter name="testType" value="mobile"/>
+        <parameter name="browser" value="chrome"/>
+        <parameter name="mobile" value="true"/>
+        <classes>
+            <class name="com.expensetracker.app.e2e.tests.mobile.ResponsiveDesignTest"/>
+        </classes>
+    </test>
+    
+</suite>
