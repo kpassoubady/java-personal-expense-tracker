@@ -437,6 +437,89 @@ By the end of this session, you should have:
 
 **Additional Help**: Frontend development is iterative. Test frequently in the browser and use developer tools to debug JavaScript and CSS issues.
 
+---
+
+## 📝 Step 5: Prepare Testing Assistant for UI Automation (5 minutes)
+
+### 🧪 Create Selenium Expert Chatmode
+
+Now that we've built our web interface, let's create a specialized testing assistant for the upcoming UI automation session:
+
+**Copilot Prompt:**
+
+```text
+/generate Create GitHub Copilot chatmode for Selenium UI testing expertise:
+
+Filepath: .github/chatmodes/selenium-expert.chatmode.md
+
+Include YAML frontmatter with:
+- description: 'Selenium testing specialist for UI automation of this expense tracker'
+- tools: []
+
+Project context:
+- Spring Boot web application with Thymeleaf templates
+- Bootstrap-styled responsive interface
+- Pages: Dashboard (/), Categories (/categories), Expenses (/expenses)
+- Forms with validation and AJAX functionality
+
+Specialized behavior for:
+- WebDriver setup (Chrome/Firefox) with WebDriverManager
+- TestNG framework organization and annotations
+- Page Object Model design patterns
+- Element location strategies (CSS selectors, XPath)
+- Wait strategies and timing issues
+- Cross-browser testing considerations
+- Headless execution for CI/CD
+
+Include expertise for:
+- Selenium WebDriver 4.x best practices
+- TestNG test structure and data providers
+- Page Object Model architecture
+- Common UI testing patterns
+- Debugging failed tests
+- Performance and reliability optimization
+
+Provide project-specific examples using:
+- Package: com.expensetracker.app.uitests
+- Test categories, expenses, and dashboard functionality
+- Bootstrap component interactions
+- Form validation testing
+```
+
+**🎯 Preview Usage**: This assistant will be immediately useful in Day 3 Session 2 for UI automation!
+
+```text
+# Coming up in Day 3:
+@workspace /chatmode selenium-expert
+
+"Help me create Page Object Model classes for testing the expense tracker dashboard and navigation."
+```
+
+---
+
+## 🎉 **Congratulations! You've Built a Complete Web Application!**
+
+### ✅ **What You've Accomplished**
+
+- **Professional Web Interface**: Dashboard, categories, and expenses with Bootstrap styling
+- **Dynamic Functionality**: AJAX-powered interactions and real-time updates
+- **Responsive Design**: Mobile-friendly interface that works on all devices
+- **Data Visualization**: Charts and analytics for expense insights
+- **Complete CRUD Operations**: Full create, read, update, delete functionality
+- **Testing Preparation**: Selenium expert assistant ready for UI automation
+
+### 🔄 **Quick Final Test**
+
+Test your complete application:
+
+```bash
+# Start application
+mvn spring-boot:run
+
+# Test in browser: http://localhost:8080
+# Verify: All pages load, forms work, charts display, AJAX updates function
+```
+
 **🎯 Outstanding Work!** You now have a complete, professional web application that rivals commercial expense tracking tools!
 
 ---
@@ -450,5 +533,11 @@ By the end of this session, you should have:
 - ✅ **Complete Functionality**: All CRUD operations through web interface
 - ✅ **Modern Features**: AJAX, filtering, search, validation
 - ✅ **Production Ready**: Error handling, user feedback, mobile support
+- ✅ **AI-Powered Development**: Advanced chatmode assistants ready for testing
+
+### 🚀 **What's Next?**
+
+**Coming in Day 3 Session 1**: Comprehensive Testing Strategy  
+**Coming in Day 3 Session 2**: UI Automation with Selenium & TestNG (using your new Selenium Expert!)
 
 **This is a portfolio-worthy project!** Tomorrow we'll add comprehensive testing to make it enterprise-grade. 🚀

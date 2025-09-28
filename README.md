@@ -418,6 +418,62 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 - **Documentation**: Update README for new features
 - **Commits**: Use conventional commit messages
 
+## Screenshot of Features Implemented
+
+### 🏠 Dashboard Overview
+
+<img src="images/dash-board-overview.png" alt="Dashboard Overview" width="800">
+
+*Interactive dashboard showing expense summaries, trends, and analytics with modern Bootstrap 5 styling.*
+
+### ⚡ Quick Actions Panel
+
+<img src="images/quick-actions-under-dashboard-verview.png" alt="Quick Actions Panel" width="600">
+
+*Convenient quick action buttons for adding expenses and categories directly from the dashboard.*
+
+### 🏷️ Category Management
+
+<img src="images/categories.png" alt="Category Management" width="800">
+
+*Comprehensive category management with color-coded categories, icons, and expense statistics.*
+
+### ➕ Add New Category
+
+<img src="images/add-new-category.png" alt="Add New Category" width="800">
+
+*User-friendly category creation form with color picker, icon selection, and validation.*
+
+### 💸 Expense Management
+
+<img src="images/expenses.png" alt="Expense Management" width="800">
+
+*Complete expense listing with search, filtering, sorting, and pagination capabilities.*
+
+### ➕ Add New Expense
+
+<img src="images/add-new-expense.png" alt="Add New Expense" width="800">
+
+*Intuitive expense creation form with category selection, date picker, and amount validation.*
+
+### ⚙️ Settings & Configuration
+
+<img src="images/settings-menu.png" alt="Settings Menu" width="300">
+
+*Application settings and theme configuration options.*
+
+### 🔧 Technology Stack Overview
+
+<img src="images/about-tech-stack.png" alt="Technology Stack" width="800">
+
+*Comprehensive overview of the technology stack and architecture used in the application.*
+
+### ✨ Key Features Summary
+
+<img src="images/about-key-features.png" alt="Key Features" width="800">
+
+*Summary of key features including responsive design, REST APIs, and comprehensive testing.*
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

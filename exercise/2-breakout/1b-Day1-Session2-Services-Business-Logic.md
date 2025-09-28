@@ -49,11 +49,22 @@ In this session, we'll add the business logic layer that makes your expense trac
 
 ## 📝 Step 1: Create Custom Exceptions (5 minutes)
 
+### 🤖 Activate Spring Boot Expert Mode
+
+Let's use the specialized assistant we created in Day 1a for better service layer guidance:
+
+```text
+# In Copilot Chat:
+@workspace /chatmode spring-boot-expert
+
+"We're moving to the service layer. Help me understand best practices for exception handling and business logic in Spring Boot services."
+```
+
 ### 🚨 Exception Classes
 
 Create proper error handling foundation:
 
-**Copilot Prompt:**
+**Copilot Prompt (with Spring Boot Expert active):**
 
 ```text
 /generate Create custom exception classes in com.expensetracker.app.exception package:
