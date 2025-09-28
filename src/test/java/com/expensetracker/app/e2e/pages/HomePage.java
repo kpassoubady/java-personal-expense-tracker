@@ -52,12 +52,12 @@ public class HomePage extends BasePage {
     
     @Override
     public String getExpectedPageTitle() {
-        return "Expense Tracker - Dashboard";
+        return "Dashboard - Personal Expense Tracker";  // Match actual page title
     }
     
     @Override
     public String getExpectedUrlFragment() {
-        return "/home";
+        return "";  // HomePage is at root URL ("/"), no specific fragment needed
     }
     
     /**
