@@ -5,6 +5,9 @@ import com.expensetracker.app.e2e.listeners.ExtentReportListener;
 import com.expensetracker.app.e2e.listeners.RetryAnalyzer;
 import com.expensetracker.app.e2e.pages.HomePage;
 import com.expensetracker.app.e2e.utils.AssertUtils;
+
+import static org.assertj.core.api.Assertions.from;
+
 import org.openqa.selenium.By;
 import org.testng.annotations.Test;
 
@@ -16,7 +19,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "critical"}, 
           description = "Verify application loads and dashboard is accessible",
-          retryAnalyzer = RetryAnalyzer.class)
+        enabled = true)
     public void testApplicationLoad() {
         ExtentReportListener.logInfo("Starting application load test");
         
@@ -47,8 +50,7 @@ public class SmokeTests extends BaseTest {
     }
     
     @Test(groups = {"smoke", "navigation"}, 
-          description = "Verify navigation between main pages",
-          retryAnalyzer = RetryAnalyzer.class)
+          description = "Verify navigation between main pages", enabled = true)
     public void testMainNavigation() {
         ExtentReportListener.logInfo("Starting main navigation test");
         
@@ -78,7 +80,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "data"}, 
           description = "Verify default categories exist",
-          retryAnalyzer = RetryAnalyzer.class)
+          retryAnalyzer = RetryAnalyzer.class, enabled = true)
     public void testDefaultCategoriesExist() {
         ExtentReportListener.logInfo("Starting default categories test");
         
@@ -95,8 +97,8 @@ public class SmokeTests extends BaseTest {
         AssertUtils.assertGreaterThan(systemCategoriesCount, 0, "At least one system category should exist");
         ExtentReportListener.logPass("Default categories verification successful");
         
-        // Check for specific default categories
-        String[] expectedCategories = {"Food", "Transportation", "Other"};
+        // Check for specific default categories (from DataSeeder)
+        String[] expectedCategories = {"Food", "Transport", "Entertainment"};
         for (String category : expectedCategories) {
             if (categoriesPage.isCategoryPresent(category)) {
                 ExtentReportListener.logPass("Found expected category: " + category);
@@ -108,7 +110,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "ui"}, 
           description = "Verify dashboard statistics display correctly",
-          retryAnalyzer = RetryAnalyzer.class)
+          retryAnalyzer = RetryAnalyzer.class, enabled = true)
     public void testDashboardStatistics() {
         ExtentReportListener.logInfo("Starting dashboard statistics test");
         
