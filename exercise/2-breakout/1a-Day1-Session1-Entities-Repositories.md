@@ -120,6 +120,98 @@ logging.level.com.expensetracker=DEBUG
 
 ---
 
+## 📝 Step 1.5: Create Specialized Development Assistants (8 minutes)
+
+### 🤖 GitHub Copilot Chat-Modes Setup
+
+Now that you understand model switching, let's create specialized AI assistants for different development contexts. These chat-modes will provide focused expertise throughout the course.
+
+#### 🔧 Create SDLC Development Assistant
+
+Create `.github/chatmodes/sdlc-modes.chatmode.md`:
+
+**Copilot Prompt:**
+
+```text
+/generate Create GitHub Copilot chatmode file for Software Development Life Cycle (SDLC) assistance:
+
+Filepath: .github/chatmodes/sdlc-modes.chatmode.md
+
+Include YAML frontmatter with:
+- description: 'SDLC specialized modes for different development phases'
+- tools: []
+
+Create modes for:
+1. Development Mode 🔧 - balanced speed/accuracy, practical patterns, error handling
+2. Code Review Mode 🔍 - security focus, best practices, performance analysis 
+3. Debugging Mode 🐛 - systematic troubleshooting, logging, root cause analysis
+4. Refactoring Mode ♻️ - code improvement, design patterns, maintainability
+5. Documentation Mode 📚 - comprehensive docs, examples, API documentation
+
+Each mode should specify:
+- Usage pattern (/mode [name] or "specify mode in request")
+- Specialized behavior and focus areas
+- Example prompts for that mode
+- When to use this mode
+
+Make it practical for Spring Boot development
+```
+
+#### 🍃 Create Spring Boot Expert Assistant
+
+Create `.github/chatmodes/spring-boot-expert.chatmode.md`:
+
+**Copilot Prompt:**
+
+```text
+/generate Create specialized GitHub Copilot chatmode for Spring Boot development:
+
+Filepath: .github/chatmodes/spring-boot-expert.chatmode.md
+
+Include YAML frontmatter with:
+- description: 'Spring Boot development specialist for this expense tracker project'
+- tools: []
+
+Specialized behavior for:
+- Project Context: Spring Boot 3.2.3 + Java 21, Maven build, H2 database
+- Package structure: com.expensetracker.app
+- Thymeleaf templates, JPA/Hibernate, RESTful APIs
+
+Expertise areas:
+- Entity design with proper JPA annotations
+- Repository layer with custom queries
+- Service layer with transaction management
+- REST controller best practices
+- Exception handling patterns
+- Validation and security considerations
+
+Include:
+- Coding standards and conventions
+- Common Spring Boot patterns
+- Performance optimization tips
+- Testing recommendations
+- Example prompts for typical tasks
+
+Make responses project-specific and actionable
+```
+
+#### 🚀 Immediate Application
+
+Now let's use our new Spring Boot expert for the next entity creation:
+
+**Test Your Spring Boot Expert:**
+
+```text
+# In Copilot Chat, try:
+@workspace /chatmode spring-boot-expert
+
+"Help me design the Category entity with proper JPA annotations, validation, and relationships for an expense tracker."
+```
+
+**🎯 Learning Tip**: Notice how the specialized assistant provides more contextual, project-specific guidance compared to general prompts!
+
+---
+
 ## 📝 Step 2: Create Category Entity (10 minutes)
 
 ### 🏷️ Category Entity Implementation
@@ -306,14 +398,14 @@ mvn spring-boot:run
 2. Use connection settings:
    - JDBC URL: `jdbc:h2:mem:expensedb`
    - Username: `sa`
-   - Password: (leave empty)
+   - Password: `password` (check your application.properties file)
 
 3. Check that tables were created:
 
 ```sql
 SHOW TABLES;
-DESCRIBE CATEGORY;
-DESCRIBE EXPENSE;
+SHOW COLUMNS FROM CATEGORIES;
+SHOW COLUMNS FROM EXPENSES;
 ```
 
 ---
@@ -358,13 +450,7 @@ By the end of Session 1, you should have:
 
 Let's create a `.copilot-instructions.md` file to ensure consistent Copilot behavior throughout the project:
 
-1. **Create the file** in your project root:
-
-```bash
-touch .copilot-instructions.md
-```
-
-2. **Use Copilot to populate it**:
+1. **Use Copilot to create and populate it**:
 
 ```text
 /generate Create a .copilot-instructions.md file for a Spring Boot expense tracking application with:
@@ -375,7 +461,7 @@ touch .copilot-instructions.md
 - Preferred libraries: Spring Boot starters, H2 database
 ```
 
-3. **Verify it works** by asking:
+2. **Verify it works** by asking:
 
 ```text
 "Generate a JPA entity following the project standards"
