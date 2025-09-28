@@ -1,6 +1,7 @@
 package com.expensetracker.app.entity;
 
 import com.expensetracker.app.validation.PositiveAmount;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "expenses")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Expense {
 
     @Id
