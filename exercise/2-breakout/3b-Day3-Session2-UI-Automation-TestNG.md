@@ -37,6 +37,8 @@ mvn spring-boot:run
 
 In this final session, you'll add browser automation testing to ensure your user interface works perfectly. We'll use Selenium WebDriver with TestNG to create professional UI tests that validate complete user workflows.
 
+**🎯 New Feature**: Use the Selenium Expert chatmode you created in Day 2b!
+
 ### 🎯 What You'll Build (30 minutes)
 
 - **WebDriver Setup**: Chrome/Firefox automation configuration  
@@ -47,13 +49,28 @@ In this final session, you'll add browser automation testing to ensure your user
 
 ---
 
+## 🧪 Step 0.5: Activate Selenium Expert Assistant (1 minute)
+
+Let's immediately use the specialized testing assistant you created yesterday:
+
+```text
+# In Copilot Chat:
+@workspace /chatmode selenium-expert
+
+"I'm ready to start UI automation testing for the expense tracker. Help me set up Selenium WebDriver with TestNG for testing our Spring Boot web application."
+```
+
+**🎯 Pro Tip**: Keep this chatmode active throughout the session for specialized Selenium guidance!
+
+---
+
 ## 📝 Step 1: Add Selenium Dependencies & Configuration (5 minutes)
 
 ### 🔧 Update Maven Dependencies
 
 Add UI testing dependencies to your pom.xml:
 
-**Copilot Prompt:**
+**Copilot Prompt (with Selenium Expert active):**
 
 ```text
 /generate Update pom.xml to add Selenium WebDriver and TestNG dependencies:
