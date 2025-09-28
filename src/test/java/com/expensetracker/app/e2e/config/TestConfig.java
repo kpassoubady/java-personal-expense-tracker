@@ -150,7 +150,7 @@ public class TestConfig {
      * Get maximum retry count
      */
     public int getMaxRetryCount() {
-        return Integer.parseInt(getProperty("retry.max.count", "2"));
+        return Integer.parseInt(getProperty("retry.max.count", "1"));
     }
     
     /**
