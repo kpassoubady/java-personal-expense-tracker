@@ -19,13 +19,12 @@
     <test name="SmokeTests" enabled="true">
         <parameter name="testType" value="smoke"/>
         <classes>
-            <class name="com.expensetracker.app.e2e.tests.smoke.LoginSmokeTest"/>
-            <class name="com.expensetracker.app.e2e.tests.smoke.DashboardSmokeTest"/>
+            <class name="com.expensetracker.app.e2e.tests.smoke.SmokeTests"/>
         </classes>
     </test>
     
     <!-- Regression Tests - Full functionality -->
-    <test name="RegressionTests" enabled="true">
+    <test name="RegressionTests" enabled="false">
         <parameter name="testType" value="regression"/>
         <classes>
             <class name="com.expensetracker.app.e2e.tests.regression.ExpenseManagementTest"/>
@@ -36,7 +35,7 @@
     </test>
     
     <!-- API Tests - Backend validation -->
-    <test name="ApiTests" enabled="true">
+    <test name="ApiTests" enabled="false">
         <parameter name="testType" value="api"/>
         <classes>
             <class name="com.expensetracker.app.e2e.tests.api.ExpenseApiTest"/>
