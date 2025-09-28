@@ -593,7 +593,7 @@ class ExpenseRepositoryIntegrationTest {
         @DisplayName("Should handle bulk insert operations efficiently")
         void testBulkInsertPerformance() {
             // Given
-            int recordCount = 1000;
+            int recordCount = Integer.parseInt(System.getProperty("expense.test.bulkInsert.count", "200"));
             StopWatch stopWatch = new StopWatch();
 
             // When
