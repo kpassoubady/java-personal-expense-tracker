@@ -2,6 +2,7 @@ package com.expensetracker.app.entity;
 
 import com.expensetracker.app.validation.ValidColor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "categories")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category {
 
     @Id
@@ -146,6 +148,7 @@ public class Category {
      * 
      * @return the count of expenses
      */
+    @JsonIgnore
     public int getExpenseCount() {
         return expenses != null ? expenses.size() : 0;
     }
