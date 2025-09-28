@@ -139,6 +139,11 @@ public class ExpenseService {
                 "Amount cannot have more than 2 decimal places");
         }
         
+        // Business rule: Single expense cannot exceed $10,000
+        if (expense.getAmount().compareTo(new BigDecimal("10000")) > 0) {
+            throw new IllegalArgumentException("Single expense cannot exceed $10,000");
+        }
+        
         if (expense.getExpenseDate() == null) {
             throw new ValidationException("expenseDate", "null", "Expense date is required");
         }
