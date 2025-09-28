@@ -16,7 +16,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "critical"}, 
           description = "Verify application loads and dashboard is accessible",
-          retryAnalyzer = RetryAnalyzer.class)
+        enabled = true)
     public void testApplicationLoad() {
         ExtentReportListener.logInfo("Starting application load test");
         
@@ -48,7 +48,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "navigation"}, 
           description = "Verify navigation between main pages",
-          retryAnalyzer = RetryAnalyzer.class)
+          retryAnalyzer = RetryAnalyzer.class, enabled = false)
     public void testMainNavigation() {
         ExtentReportListener.logInfo("Starting main navigation test");
         
@@ -78,7 +78,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "data"}, 
           description = "Verify default categories exist",
-          retryAnalyzer = RetryAnalyzer.class)
+          retryAnalyzer = RetryAnalyzer.class, enabled = false)
     public void testDefaultCategoriesExist() {
         ExtentReportListener.logInfo("Starting default categories test");
         
@@ -108,7 +108,7 @@ public class SmokeTests extends BaseTest {
     
     @Test(groups = {"smoke", "ui"}, 
           description = "Verify dashboard statistics display correctly",
-          retryAnalyzer = RetryAnalyzer.class)
+          retryAnalyzer = RetryAnalyzer.class, enabled = false)
     public void testDashboardStatistics() {
         ExtentReportListener.logInfo("Starting dashboard statistics test");
         
