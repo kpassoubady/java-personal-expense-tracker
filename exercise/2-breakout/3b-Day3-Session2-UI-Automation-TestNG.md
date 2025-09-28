@@ -37,6 +37,8 @@ mvn spring-boot:run
 
 In this final session, you'll add browser automation testing to ensure your user interface works perfectly. We'll use Selenium WebDriver with TestNG to create professional UI tests that validate complete user workflows.
 
+**🎯 New Feature**: Use the Selenium Expert chatmode you created in Day 2b!
+
 ### 🎯 What You'll Build (30 minutes)
 
 - **WebDriver Setup**: Chrome/Firefox automation configuration  
@@ -47,13 +49,28 @@ In this final session, you'll add browser automation testing to ensure your user
 
 ---
 
+## 🧪 Step 0.5: Activate Selenium Expert Assistant (1 minute)
+
+Let's immediately use the specialized testing assistant you created yesterday:
+
+```text
+# In Copilot Chat:
+@workspace /chatmode selenium-expert
+
+"I'm ready to start UI automation testing for the expense tracker. Help me set up Selenium WebDriver with TestNG for testing our Spring Boot web application."
+```
+
+**🎯 Pro Tip**: Keep this chatmode active throughout the session for specialized Selenium guidance!
+
+---
+
 ## 📝 Step 1: Add Selenium Dependencies & Configuration (5 minutes)
 
 ### 🔧 Update Maven Dependencies
 
 Add UI testing dependencies to your pom.xml:
 
-**Copilot Prompt:**
+**Copilot Prompt (with Selenium Expert active):**
 
 ```text
 /generate Update pom.xml to add Selenium WebDriver and TestNG dependencies:
@@ -439,6 +456,219 @@ Add advanced reporting capabilities:
 
 ---
 
+## 📝 Step 5: Create Custom GitHub Copilot Prompt Templates (5 minutes)
+
+Now that you've mastered UI automation testing, let's create reusable prompt templates for common development tasks. These will help you maintain consistency and speed up development across different projects.
+
+### 🎯 Custom Prompt Templates Setup
+
+Create a `.github/prompts/` directory in your project root to store reusable prompt templates:
+
+**Copilot Prompt:**
+
+```text
+/generate Create directory structure and prompt template files:
+
+Create .github/prompts/ directory with three template files:
+
+1. ui-component.prompt.md - Template for UI component creation
+2. api-endpoint.prompt.md - Template for REST API development  
+3. selenium-test.prompt.md - Template for UI test automation
+
+Each file should contain a structured template that can be customized for specific use cases
+Include parameter placeholders and best practices guidance
+```
+
+### 🎨 UI Component Prompt Template
+
+Create reusable template for UI development:
+
+**Copilot Prompt:**
+
+```text
+/generate Create .github/prompts/ui-component.prompt.md with template:
+
+# UI Component Creation Template
+
+## Usage Pattern: `/ui Create responsive [interface element] with [styling framework]`
+
+### Template Structure:
+```
+
+/generate Create responsive [COMPONENT_TYPE] component with [FRAMEWORK] featuring:
+
+Visual Design:
+
+- [DESIGN_REQUIREMENTS] (e.g., mobile-first responsive design)
+- [STYLING_DETAILS] (e.g., Bootstrap 5 classes, custom CSS)
+- [ACCESSIBILITY_FEATURES] (e.g., ARIA labels, keyboard navigation)
+
+Functionality:
+
+- [INTERACTIVE_FEATURES] (e.g., form validation, dynamic updates)
+- [EVENT_HANDLERS] (e.g., click, submit, change events)
+- [DATA_BINDING] (e.g., form data, API integration)
+
+Implementation Requirements:
+
+- [FRAMEWORK_SPECIFIC] (e.g., Thymeleaf templates, jQuery integration)
+- [RESPONSIVE_BREAKPOINTS] (e.g., mobile, tablet, desktop layouts)
+- [BROWSER_COMPATIBILITY] (e.g., modern browsers, IE11 support)
+
+Include proper error handling and loading states
+Ensure WCAG 2.1 accessibility compliance
+
+```
+
+### Examples:
+- Modal dialogs with form validation
+- Data tables with sorting and filtering  
+- Interactive charts and dashboards
+- Responsive navigation menus
+- Form wizards with step validation
+```
+
+### 🔌 API Endpoint Prompt Template
+
+Create template for REST API development:
+
+**Copilot Prompt:**
+
+```text
+/generate Create .github/prompts/api-endpoint.prompt.md with template:
+
+# REST API Endpoint Creation Template
+
+## Usage Pattern: `/api Generate REST endpoint for [operation] with [validation requirements]`
+
+### Template Structure:
+```
+
+/generate Create REST endpoint for [OPERATION_NAME] with comprehensive implementation:
+
+Endpoint Configuration:
+
+- HTTP Method: [GET/POST/PUT/DELETE]
+- URL Pattern: /api/[RESOURCE_PATH]/[PATH_VARIABLES]
+- Request/Response Content-Type: application/json
+
+Request Handling:
+
+- [REQUEST_PARAMETERS] (e.g., @PathVariable, @RequestParam, @RequestBody)
+- [VALIDATION_RULES] (e.g., @Valid, @NotNull, custom validators)
+- [AUTHENTICATION_REQUIREMENTS] (e.g., JWT, basic auth, role-based)
+
+Business Logic:
+
+- [SERVICE_LAYER_CALLS] (e.g., service methods, transaction management)
+- [DATA_PROCESSING] (e.g., mapping, filtering, aggregation)
+- [ERROR_SCENARIOS] (e.g., not found, validation failures, business rule violations)
+
+Response Handling:
+
+- [SUCCESS_RESPONSES] (e.g., 200 OK, 201 Created, 204 No Content)
+- [ERROR_RESPONSES] (e.g., 400 Bad Request, 404 Not Found, 409 Conflict)
+- [RESPONSE_BODY_FORMAT] (e.g., DTO structure, pagination, metadata)
+
+Include comprehensive exception handling with proper HTTP status codes
+Add OpenAPI/Swagger documentation annotations
+Implement request/response logging for debugging
+
+```
+
+### Examples:
+- CRUD operations for business entities
+- Search endpoints with filtering and pagination
+- File upload/download endpoints
+- Batch processing endpoints
+- Integration with external APIs
+```
+
+### 🧪 Selenium Test Prompt Template
+
+Create template for UI test automation:
+
+**Copilot Prompt:**
+
+```text
+/generate Create .github/prompts/selenium-test.prompt.md with template:
+
+# Selenium UI Test Creation Template
+
+## Usage Pattern: `/selenium Create UI test for [user workflow] using Page Object Model`
+
+### Template Structure:
+```
+
+/generate Create comprehensive UI test for [USER_WORKFLOW] using Page Object Model:
+
+Test Setup:
+
+- TestNG test class extending [BASE_TEST_CLASS]
+- @Test methods with appropriate groups (smoke, regression, e2e)
+- Test data preparation and cleanup strategies
+- Browser configuration (headless mode, window size, timeouts)
+
+Page Object Model:
+
+- [PAGE_OBJECT_CLASSES] required for the workflow
+- Element locators using @FindBy annotations or By locators
+- Page methods for user actions (click, type, select, navigate)
+- Verification methods for assertions and validations
+
+User Workflow Steps:
+
+- [STEP_1]: [ACTION_DESCRIPTION] with [VERIFICATION]
+- [STEP_2]: [ACTION_DESCRIPTION] with [VERIFICATION]
+- [STEP_N]: [ACTION_DESCRIPTION] with [VERIFICATION]
+
+Test Scenarios:
+
+- [POSITIVE_SCENARIOS]: Happy path user journeys
+- [NEGATIVE_SCENARIOS]: Error conditions and edge cases
+- [BOUNDARY_CONDITIONS]: Input validation limits and constraints
+
+Assertions and Verifications:
+
+- [UI_ELEMENT_ASSERTIONS] (visibility, text content, state)
+- [DATA_ASSERTIONS] (form submissions, database updates)
+- [NAVIGATION_ASSERTIONS] (URL changes, page transitions)
+
+Include proper wait strategies (explicit waits, custom conditions)
+Add screenshot capture for test failures and key steps
+Implement retry logic for flaky test scenarios
+Ensure tests can run in parallel execution mode
+
+```
+
+### Examples:
+- Complete user registration and login workflows
+- E-commerce shopping cart and checkout processes
+- Form submission with multi-step validation
+- Data table operations (search, filter, sort, paginate)
+- File upload/download user journeys
+```
+
+### 📋 Using Your Custom Templates
+
+Once created, you can use these templates by:
+
+1. **Copy Template**: Copy the relevant template structure
+2. **Customize Parameters**: Replace placeholders with your specific requirements
+3. **Execute with Copilot**: Use the customized prompt with GitHub Copilot
+4. **Refine Results**: Iterate on the generated code based on your needs
+
+**Example Usage:**
+
+```text
+/ui Create responsive expense form modal with Bootstrap 5 featuring:
+- Mobile-first design with validation feedback
+- Real-time amount formatting and category selection
+- Accessibility compliance with ARIA labels
+```
+
+---
+
 ## 🎉 Session 2 Deliverables
 
 ### ✅ What You've Accomplished
@@ -451,6 +681,7 @@ By the end of this session, you should have:
 - **✅ Comprehensive UI Tests** - 15+ test methods covering user workflows  
 - **✅ End-to-End Testing** - Complete CRUD workflows automated
 - **✅ Professional Reporting** - Screenshots, timing, and detailed test reports
+- **✅ Custom Copilot Templates** - Reusable prompt patterns for `/ui`, `/api`, and `/selenium`
 
 ### 🔍 Final Quality Checklist
 
@@ -460,6 +691,8 @@ By the end of this session, you should have:
 - [ ] TestNG configuration supports parallel execution
 - [ ] Screenshots captured automatically on test failures
 - [ ] Tests can run in headless mode for CI/CD integration
+- [ ] Custom Copilot prompt templates created and documented
+- [ ] Prompt templates follow consistent structure and best practices
 
 ---
 
@@ -531,6 +764,7 @@ By the end of this session, you should have:
    **A**: Follow the patterns established, maintain test coverage, use version control effectively
 
 **🎯 Next Learning Steps:**
+
 - Explore Spring Security for authentication
 - Learn Docker and Kubernetes for deployment  
 - Add CI/CD pipelines with GitHub Actions
