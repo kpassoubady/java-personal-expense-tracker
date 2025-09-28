@@ -115,8 +115,14 @@ public class HomePage extends BasePage {
      */
     public String getCategoriesCount() {
         logger.debug("Getting categories count from dashboard");
-        if (isVisible(CATEGORIES_COUNT_CARD)) {
-            return getText(By.cssSelector("#categoriesCountCard .card-text"));
+        try {
+            // Use the correct CSS selector for the third statistics card (categories count)
+            By categoriesCountSelector = By.cssSelector(".mt-4 .row > div:nth-of-type(3) .mb-0");
+            if (isVisible(categoriesCountSelector)) {
+                return getText(categoriesCountSelector);
+            }
+        } catch (Exception e) {
+            logger.error("Error getting categories count", e);
         }
         return "0";
     }
