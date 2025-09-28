@@ -10,25 +10,38 @@ This guide provides advanced GitHub Copilot techniques specifically designed for
 
 ## 🚀 **Available AI Models & When to Use Them**
 
-### 🧠 **Model Selection Examples**
+### 🧠 **Model Selection Guide**
 
-Your organization may provide different models. Here are common examples:
+Your organization may provide different models. Here's a comprehensive guide with examples:
 
-- **GPT-4 Turbo/GPT-4o**: Best for complex reasoning, architecture decisions
-- **Claude 3.5 Sonnet**: Excellent for code review, refactoring, documentation  
-- **GPT-3.5 Turbo**: Fast for simple code completion, basic prompts
-- **Codex/GitHub Copilot**: Optimized for code generation, inline suggestions
-- **GPT-4.5/GPT-5** (when available): Next-generation capabilities
+| Model | Capability | Description | Best Use Cases |
+|-------|------------|-------------|----------------|
+| **GPT-4.1** | 0x | Incremental update to OpenAI's powerful GPT-4 model | Complex reasoning, architecture decisions |
+| **GPT-4o** | 0x | OpenAI's "omni" model, optimized for fast, multimodal interactions | Quick responses, multimodal tasks |
+| **GPT-5 mini** | 0x | Smaller, more efficient version of the unreleased GPT-5 | Fast code completion, simple queries |
+| **Grok Code Fast 1** | 0x | xAI's specialized coding model, designed for speed | Rapid code generation, debugging |
+| **Claude Sonnet 3.5** | 1x | Anthropic's fast and cost-effective model, excelling at enterprise tasks | Code review, documentation, refactoring |
+| **Claude Sonnet 3.7** | 1x | Future iteration of Anthropic's Sonnet model series | Advanced analysis, complex problem solving |
+| **Claude Sonnet 4** | 1x | Next-generation model in the Sonnet series | Sophisticated reasoning, code architecture |
+| **Gemini 2.5 Pro** | 1x | Future version of Google's advanced Gemini Pro model | Multi-language support, complex analysis |
+| **GPT-5** | 1x | Next-generation flagship large language model from OpenAI | Most complex tasks, advanced reasoning |
+| **GPT-5-Codex** | 1x | GPT-5 specialized for code generation | Advanced code generation, complex algorithms |
+| **o3-mini** | 0.33x | Smaller, efficient model from emerging developers | Basic tasks, quick responses |
+| **o4-mini (Preview)** | 0.33x | Preview version of next-gen small model | Testing new features, lightweight tasks |
 
-**📝 How to Switch Models:**
-```
+### 📝 **How to Switch Models**
+
+```bash
 # In Copilot Chat
-/model gpt-4-turbo
-/model claude-3-5-sonnet
-/model gpt-3.5-turbo
+/model gpt-4o          # Fast multimodal interactions
+/model claude-3.5-sonnet   # Code review and enterprise tasks
+/model gpt-5-codex     # Advanced code generation
+/model grok-code-fast-1    # Rapid development
+
+# Choose what's available in your organization
 ```
 
-*Note: Use whatever models are available in your organization's Copilot subscription.*
+**💡 Pro Tip**: Start with Claude Sonnet 3.5 for code review and GPT-4o for quick development tasks. Use more powerful models (GPT-5, Claude Sonnet 4) for complex architecture decisions.
 
 ---
 

@@ -1,25 +1,57 @@
-# 🏗️ Day 1 - Session 2: Personal Expense Tracker - Services & Business Logic (30 mins)
+# 🏗️ Day 1 - Session 2: Personal Expense Tracker - Services & Business Logic (45 mins)
 
 ## 🎯 Learning Objectives
 
 By the end of this session, you will:
 
-- Create service layer with comprehensive business logic
-- Implement custom exceptions for proper error handling
-- Add validation and data integrity checks
-- Create unit tests for critical service methods
-- Seed database with sample data for testing
+- Create service layer with comprehensive business logic using **GitHub Copilot assistance**
+- Implement custom exceptions with **Copilot-generated error handling patterns**
+- Add validation using **AI-assisted code completion**
+- Create unit tests with **Copilot's testing suggestions**
+- Practice **intermediate GitHub Copilot techniques** from the [Copilot Mastery Guide](../0-copilot-mastery-guide.md)
+- Seed database with **Copilot-generated sample data**
 
-**⏱️ Time Allocation: 30 minutes (with Q&A buffer)**
+**⏱️ Time Allocation: 45 minutes (Extended for comprehensive Copilot integration)**
 
 ---
 
-## 📋 Prerequisites Check (2 minutes)
+## 🤖 GitHub Copilot Integration - Session 2 Focus
+
+This session emphasizes **Intermediate Copilot Techniques**:
+
+### 🎯 Skills You'll Practice
+
+- **Pattern-Based Generation**: Using Copilot for service layer patterns
+- **Context-Aware Suggestions**: Leveraging existing code for better completions
+- **Test-Driven Development**: AI-assisted unit test creation
+- **Error Handling Patterns**: Generating robust exception handling
+- **Data Seeding**: Creating realistic sample data with AI
+
+### 🔧 Key Copilot Features for This Session
+
+- **Multi-line completions** for service method implementations
+- **#selection context** for enhancing specific code blocks  
+- **Method signature completion** from JavaDoc comments
+- **Test case generation** from existing service methods
+- **Validation logic patterns** for business rules
+
+> 📖 **Reference**: See [Section 2: Intermediate Techniques](../0-copilot-mastery-guide.md#section-2-intermediate-techniques) for detailed guidance
+
+---
+
+## 📋 Prerequisites Check (3 minutes)
 
 - ✅ Session 1 completed successfully
-- ✅ Entities and repositories working
+- ✅ Entities and repositories working  
 - ✅ Application starts without errors
 - ✅ H2 database accessible
+- ✅ **GitHub Copilot activated** and showing suggestions
+
+**🤖 Copilot Warm-up Exercise**:
+
+1. Open any Java file from Session 1
+2. Type `// TODO: Add validation for` and observe Copilot suggestions
+3. Verify you can see multiple completion options with `Ctrl/Cmd + Enter`
 
 **Quick Test**: Verify your foundation is solid:
 
@@ -27,7 +59,7 @@ By the end of this session, you will:
 # Ensure app still starts
 mvn spring-boot:run
 
-# Check in another terminal
+# Check in another terminal  
 curl http://localhost:8080/h2-console
 ```
 
@@ -35,166 +67,513 @@ curl http://localhost:8080/h2-console
 
 ## 🚀 Session Overview
 
-In this session, we'll add the business logic layer that makes your expense tracker intelligent. We'll focus on essential services, error handling, and testing to ensure everything works reliably.
+## 🚀 Session Overview
 
-### 🎯 What You'll Build (30 minutes)
+In this session, we'll add the business logic layer that makes your expense tracker intelligent using **GitHub Copilot's pattern recognition** capabilities. We'll focus on essential services, error handling, and testing to ensure everything works reliably.
 
-- **Custom Exceptions**: Professional error handling
-- **Category Service**: CRUD operations with validation
-- **Expense Service**: Business logic with category integration
-- **Unit Tests**: Key service method testing
-- **Data Seeding**: Sample data for development
+### 🎯 What You'll Build (45 minutes)
 
----
+- **Custom Exceptions**: Professional error handling with **Copilot-generated patterns**
+- **Category Service**: CRUD operations with **AI-assisted validation**
+- **Expense Service**: Business logic with **Copilot's relationship suggestions**
+- **Unit Tests**: **Copilot-generated test cases** for service methods
+- **Data Seeding**: **AI-created sample data** for development
 
-## 📝 Step 1: Create Custom Exceptions (5 minutes)
+### 🤖 Copilot Integration Milestones
 
-### 🚨 Exception Classes
+Each step includes specific Copilot techniques:
 
-Create proper error handling foundation:
-
-**Copilot Prompt:**
-
-```text
-/generate Create custom exception classes in com.expensetracker.app.exception package:
-
-1. EntityNotFoundException extends RuntimeException:
-   - Constructor with message
-   - Constructor with message and cause
-   - Static methods like notFound(String entityName, Long id)
-
-2. ValidationException extends RuntimeException:
-   - Constructor with message
-   - Constructor with message and cause
-   - Static method invalidData(String field, String reason)
-
-Include proper documentation and examples
-```
-
-**Expected files:**
-
-- `src/main/java/com/expensetracker/app/exception/EntityNotFoundException.java`
-- `src/main/java/com/expensetracker/app/exception/ValidationException.java`
+1. **Pattern Generation**: Exception class templates
+2. **Service Layer Completion**: Business logic suggestions
+3. **Test Creation**: Automated test case generation
+4. **Data Generation**: Realistic sample data creation
 
 ---
 
-## 📝 Step 2: Create Category Service (10 minutes)
+## 📝 Step 1: Create Custom Exceptions with Copilot (8 minutes)
 
-### 🏢 Category Service Implementation
+### 🚨 Exception Classes - AI-Assisted Creation
 
-Build the category business logic:
+Create proper error handling foundation using Copilot's pattern recognition:
 
-**Copilot Prompt:**
+**🤖 Copilot Exercise 1A: Exception Pattern Generation**
 
-```text
-/generate Create CategoryService in com.expensetracker.app.service package with:
+1. **Create** `src/main/java/com/expensetracker/app/exception/EntityNotFoundException.java`
 
-Core CRUD operations:
-- saveCategory(Category category) with duplicate name validation
-- getAllCategories() returning ordered list
-- getCategoryById(Long id) with EntityNotFoundException if not found
-- updateCategory(Long id, Category updatedCategory) with validation
-- deleteCategory(Long id) with expense relationship checking
+2. **Start with intentional prompt** (Type this exact comment):
 
-Additional business methods:
-- getCategoryCount() returning total count
-- getCategoryStatistics() returning Map<String, Object> with usage stats
-- findCategoriesByName(String searchName) for partial matching
+   ```java
+   package com.expensetracker.app.exception;
+   
+   /**
+    * Custom exception for entity not found scenarios
+    * Provides static factory methods for common cases
+    */
+   // Exception class that extends RuntimeException with constructors and static factory methods
+   ```
 
-Include:
-- @Service annotation
-- @Transactional annotations (read-only where appropriate)  
-- Proper exception handling using custom exceptions
-- Validation for duplicate names and business rules
-- Logger for debugging
-```
+3. **Let Copilot generate** the complete class structure
+4. **Press `Ctrl/Cmd + Enter`** to see multiple suggestions
+5. **Choose the most comprehensive option**
 
-**Expected file**: `src/main/java/com/expensetracker/app/service/CategoryService.java`
+**🤖 Copilot Exercise 1B: Validation Exception**
 
-### ✅ **Quick Test**
+1. **Create** `src/main/java/com/expensetracker/app/exception/ValidationException.java`
 
-After creating CategoryService, test it works:
+2. **Use descriptive comment** to guide Copilot:
 
-**Copilot Prompt:**
+   ```java
+   package com.expensetracker.app.exception;
+   
+   /**
+    * Exception for validation failures in business logic
+    * Used when data doesn't meet business rules
+    */
+   // RuntimeException subclass for validation errors with message and cause constructors
+   ```
 
-```text
-/generate Create a simple test method in CategoryService that creates a test category and saves it, then logs the result. Add this as a @PostConstruct method for now.
-```
+**🎯 Expected Copilot Behavior**: Copilot should generate:
 
----
+- Proper inheritance from RuntimeException
+- Multiple constructor overloads
+- Static factory methods for common scenarios
+- Professional JavaDoc comments
 
-## 📝 Step 3: Create Expense Service (10 minutes)
+**💡 Pro Tip**: If Copilot's first suggestion isn't complete, try adding more descriptive comments like `// Add static factory method for not found with ID`
+**🎯 Expected Copilot Behavior**:
 
-### 💼 Expense Service Implementation
+Copilot should generate:
 
-Create the main business logic service:
+- Proper inheritance from RuntimeException
+- Multiple constructor overloads
+- Static factory methods for common scenarios  
+- Professional JavaDoc comments
 
-**Copilot Prompt:**
-
-```text
-/generate Create ExpenseService in com.expensetracker.app.service package with:
-
-Core CRUD operations:
-- saveExpense(Expense expense) with category validation and amount checks
-- getAllExpenses() returning latest expenses first
-- getExpenseById(Long id) with proper exception handling
-- updateExpense(Long id, Expense updatedExpense) with validation
-- deleteExpense(Long id) with confirmation
-
-Query and reporting methods:
-- getExpensesByCategory(Long categoryId) filtering by category
-- getExpensesByDateRange(LocalDate start, LocalDate end) date filtering
-- getTotalExpenseAmount() returning BigDecimal sum
-- getExpenseCount() returning total count
-- searchExpenses(String keyword) searching description
-
-Business validation:
-- validateExpenseAmount(BigDecimal amount) ensuring positive amounts
-- validateExpenseDate(LocalDate date) ensuring not future dates
-- validateCategory(Category category) ensuring category exists
-
-Include:
-- @Service annotation and @Transactional management
-- Integration with CategoryService for validation
-- Custom exception handling
-- Logger for business operations
-- Proper null checking and edge cases
-```
-
-**Expected file**: `src/main/java/com/expensetracker/app/service/ExpenseService.java`
+**💡 Pro Tip**: If Copilot's first suggestion isn't complete, try adding more descriptive comments like `// Add static factory method for not found with ID`
 
 ---
 
-## 📝 Step 4: Create Sample Data Seeder (8 minutes)
+## 📝 Step 2: Create Category Service with AI Assistance (12 minutes)
 
-### 🌱 Data Seeding Component
+### 🏢 Category Service Implementation - Pattern-Based Generation
 
-Create realistic test data:
+Build comprehensive category business logic using Copilot's service pattern recognition:
 
-**Copilot Prompt:**
+**🤖 Copilot Exercise 2A: Service Class Structure**
 
-```text
-/generate Create DataSeeder component in com.expensetracker.app package with:
+1. **Create** `src/main/java/com/expensetracker/app/service/CategoryService.java`
 
-@Component class that runs on ApplicationReadyEvent:
-- Create 5-6 sample categories (Food, Transport, Entertainment, Shopping, Bills, Health)
-- Each category should have appropriate icon (FontAwesome icons) and color codes
-- Generate 15-20 realistic expenses across different categories
-- Use various amounts ($5-$500) and recent dates (last 30 days)
-- Include realistic descriptions like "Grocery shopping", "Gas station", "Movie tickets"
-- Check if data already exists before seeding (avoid duplicates on restart)
-- Log all seeding activities for verification
+2. **Start with class-level context** (Type this template):
 
-Sample categories with details:
-- Food: icon "fas fa-utensils", color "#FF6B6B"
-- Transport: icon "fas fa-car", color "#4ECDC4"  
-- Entertainment: icon "fas fa-film", color "#45B7D1"
-- Shopping: icon "fas fa-shopping-bag", color "#96CEB4"
-- Bills: icon "fas fa-file-invoice", color "#FECA57"
-- Health: icon "fas fa-medkit", color "#FF9FF3"
+   ```java
+   package com.expensetracker.app.service;
+   
+   import com.expensetracker.app.entity.Category;
+   import com.expensetracker.app.repository.CategoryRepository;
+   import com.expensetracker.app.exception.EntityNotFoundException;
+   import com.expensetracker.app.exception.ValidationException;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Service;
+   import org.springframework.transaction.annotation.Transactional;
+   import org.slf4j.Logger;
+   import org.slf4j.LoggerFactory;
+   
+   import java.util.List;
+   import java.util.Map;
+   
+   /**
+    * Service layer for Category management with comprehensive business logic
+    * Includes CRUD operations, validation, and analytics
+    */
+   @Service
+   @Transactional
+   public class CategoryService {
+       
+       private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
+       
+       @Autowired
+       private CategoryRepository categoryRepository;
+       
+       // Generate CRUD methods with validation and exception handling
+   ```
 
-Use the services you just created (CategoryService, ExpenseService) for data creation
+3. **Let Copilot complete each method** by adding descriptive comments:
+
+   ```java
+   /**
+    * Saves a new category with duplicate name validation
+    * @param category the category to save
+    * @return saved category
+    * @throws ValidationException if name already exists
+    */
+   // Method to save category with duplicate name checking
+   ```
+
+**🤖 Copilot Exercise 2B: Business Logic Methods**
+
+Continue adding business methods with Copilot assistance:
+
+```java
+// Method to get all categories ordered by name
+
+// Method to get category by ID with exception if not found  
+
+// Method to update category with validation
+
+// Method to delete category checking for expense relationships
+
+// Method to get total category count
+
+// Method to find categories by partial name match
+
+// Method to get category statistics with expense counts
 ```
+
+**🎯 Copilot Pattern Recognition**: Copilot should suggest:
+
+- `@Transactional(readOnly = true)` for query methods
+- Proper exception throwing with custom messages
+- Validation logic for business rules
+- Repository method calls with error handling
+- Logging statements for debugging
+
+**🤖 Copilot Exercise 2C: Quick Test Method**
+
+Add a test method to verify service works:
+
+```java
+/**
+ * Quick test method to verify category service functionality
+ * Remove this after comprehensive tests are added
+ */
+@PostConstruct
+// Method to create and save a test category, then log result
+```
+
+---
+---
+
+## 📝 Step 3: Create Expense Service with Advanced AI Patterns (12 minutes)
+
+### 💼 Expense Service Implementation - Complex Business Logic
+
+Create comprehensive expense management using Copilot's advanced pattern recognition:
+
+**🤖 Copilot Exercise 3A: Service Class Foundation**
+
+1. **Create** `src/main/java/com/expensetracker/app/service/ExpenseService.java`
+
+2. **Start with comprehensive service template**:
+
+   ```java
+   package com.expensetracker.app.service;
+   
+   import com.expensetracker.app.entity.Expense;
+   import com.expensetracker.app.entity.Category;
+   import com.expensetracker.app.repository.ExpenseRepository;
+   import com.expensetracker.app.exception.EntityNotFoundException;
+   import com.expensetracker.app.exception.ValidationException;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.stereotype.Service;
+   import org.springframework.transaction.annotation.Transactional;
+   import org.slf4j.Logger;
+   import org.slf4j.LoggerFactory;
+   
+   import java.math.BigDecimal;
+   import java.time.LocalDate;
+   import java.util.List;
+   
+   /**
+    * Service layer for Expense management with comprehensive business logic
+    * Includes CRUD operations, validation, reporting, and analytics
+    */
+   @Service
+   @Transactional  
+   public class ExpenseService {
+       
+       private static final Logger logger = LoggerFactory.getLogger(ExpenseService.class);
+       
+       @Autowired
+       private ExpenseRepository expenseRepository;
+       
+       @Autowired
+       private CategoryService categoryService;
+       
+       // Generate comprehensive CRUD operations with validation
+   ```
+
+**🤖 Copilot Exercise 3B: CRUD Methods with Validation**
+
+Add business methods using descriptive comments for Copilot:
+
+```java
+/**
+ * Saves a new expense with comprehensive validation
+ * @param expense the expense to save
+ * @return saved expense
+ * @throws ValidationException if validation fails
+ */
+// Method to save expense with amount validation and category checking
+
+/**
+ * Retrieves all expenses ordered by date (latest first)
+ * @return list of all expenses
+ */  
+// Method to get all expenses ordered by date descending
+
+// Method to get expense by ID with EntityNotFoundException if not found
+
+// Method to update expense with full validation
+
+// Method to delete expense with logging
+```
+
+**🤖 Copilot Exercise 3C: Query and Reporting Methods**
+
+Continue with advanced query methods:
+
+```java
+// Method to get expenses by category ID with category validation
+
+// Method to get expenses by date range with validation
+
+// Method to get total expense amount using repository sum query
+
+// Method to search expenses by keyword in description (case insensitive)
+
+// Method to get expense statistics grouped by category
+```
+
+**🤖 Copilot Exercise 3D: Business Validation Methods**
+
+Add private validation methods:
+
+```java
+/**
+ * Validates expense amount is positive and not null
+ * @param amount the amount to validate
+ * @throws ValidationException if invalid
+ */  
+// Private method to validate expense amount is positive
+
+// Private method to validate expense date is not in future
+
+// Private method to validate category exists and is active
+```
+
+**🎯 Copilot Advanced Pattern Recognition**:
+
+Copilot should demonstrate:
+
+- **Service dependency injection** patterns
+- **Complex validation logic** with multiple checks
+- **Query method patterns** with proper parameter handling
+- **Exception handling** with meaningful messages
+- **Transaction management** with read-only annotations
+
+---
+
+## 📝 Step 4: Create Sample Data Seeder with AI-Generated Content (10 minutes)
+
+### 🌱 Data Seeding Component - Realistic Test Data Generation
+
+Create comprehensive sample data using Copilot's content generation capabilities:
+
+**🤖 Copilot Exercise 4A: Data Seeder Structure**
+
+1. **Create** `src/main/java/com/expensetracker/app/DataSeeder.java`
+
+2. **Start with event listener template**:
+
+   ```java
+   package com.expensetracker.app;
+   
+   import com.expensetracker.app.entity.Category;
+   import com.expensetracker.app.entity.Expense;
+   import com.expensetracker.app.service.CategoryService;
+   import com.expensetracker.app.service.ExpenseService;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.boot.context.event.ApplicationReadyEvent;
+   import org.springframework.context.event.EventListener;
+   import org.springframework.stereotype.Component;
+   import org.slf4j.Logger;
+   import org.slf4j.LoggerFactory;
+   
+   import java.math.BigDecimal;
+   import java.time.LocalDate;
+   
+   /**
+    * Component to seed database with sample data for development and testing
+    * Runs automatically when application starts and database is empty
+    */
+   @Component
+   public class DataSeeder {
+       
+       private static final Logger logger = LoggerFactory.getLogger(DataSeeder.class);
+       
+       @Autowired
+       private CategoryService categoryService;
+       
+       @Autowired  
+       private ExpenseService expenseService;
+       
+       @EventListener(ApplicationReadyEvent.class)
+       // Method to seed data on application startup if database is empty
+   ```
+
+**🤖 Copilot Exercise 4B: Category Generation**
+
+Add category creation with Copilot-generated realistic data:
+
+```java
+/**
+ * Creates sample categories with icons and colors if none exist
+ */
+// Private method to create sample categories with FontAwesome icons and hex colors
+
+/**
+ * Creates realistic sample expenses across different categories and date ranges  
+ */
+// Private method to create 15-20 sample expenses with realistic amounts and descriptions
+```
+
+**🤖 Copilot Exercise 4C: Realistic Content Generation**
+
+Let Copilot generate varied, realistic content:
+
+```java
+// Array of realistic expense descriptions for different categories:
+// Food: "Grocery shopping at Whole Foods", "Lunch at Italian restaurant", etc.
+// Transport: "Gas station fill-up", "Uber ride downtown", "Bus monthly pass", etc.
+// Entertainment: "Movie tickets", "Concert at Madison Square", "Netflix subscription", etc.
+// Shopping: "New running shoes", "Online book purchase", "Clothing at Target", etc.
+// Bills: "Electric bill", "Internet service", "Mobile phone plan", etc.
+// Health: "Pharmacy prescription", "Dentist appointment", "Gym membership", etc.
+```
+
+**🎯 Advanced Copilot Techniques**:
+
+Copilot should generate:
+
+- **Realistic expense descriptions** with variety and context
+- **Appropriate amount ranges** for different categories
+- **Recent date distributions** across the last 30 days
+- **Color codes and icons** matching category types
+- **Duplicate checking logic** to prevent re-seeding
+
+---
+
+## 📝 Step 5: Create Unit Tests with AI-Generated Test Cases (8 minutes)
+
+### 🧪 Unit Testing with Copilot
+
+Generate comprehensive tests using Copilot's testing patterns:
+
+**🤖 Copilot Exercise 5A: CategoryService Tests**
+
+1. **Create** `src/test/java/com/expensetracker/app/service/CategoryServiceTest.java`
+
+2. **Start with test class structure**:
+
+   ```java
+   package com.expensetracker.app.service;
+   
+   import com.expensetracker.app.entity.Category;
+   import com.expensetracker.app.repository.CategoryRepository;
+   import com.expensetracker.app.exception.EntityNotFoundException;
+   import com.expensetracker.app.exception.ValidationException;
+   import org.junit.jupiter.api.Test;
+   import org.junit.jupiter.api.BeforeEach;
+   import org.mockito.InjectMocks;
+   import org.mockito.Mock;
+   import org.mockito.MockitoAnnotations;
+   import org.springframework.boot.test.context.SpringBootTest;
+   
+   import java.util.Optional;
+   
+   import static org.junit.jupiter.api.Assertions.*;
+   import static org.mockito.Mockito.*;
+   
+   /**
+    * Unit tests for CategoryService with comprehensive test coverage
+    */  
+   @SpringBootTest
+   class CategoryServiceTest {
+       
+       @Mock
+       private CategoryRepository categoryRepository;
+       
+       @InjectMocks
+       private CategoryService categoryService;
+       
+       // Generate test setup method and comprehensive test methods
+   ```
+
+**🤖 Copilot Exercise 5B: Test Method Generation**
+
+Let Copilot generate comprehensive test methods:
+
+```java
+// Test method for successful category save
+// Test method for duplicate category name validation
+// Test method for category not found exception
+// Test method for successful category update
+// Test method for category deletion with expense check
+```
+
+**🎯 Expected Test Coverage**: Copilot should generate tests for:
+
+- **Happy path scenarios** with valid data
+- **Exception scenarios** with appropriate assertions
+- **Edge cases** like null values and empty strings
+- **Mock verification** for repository interactions
+
+---
+
+## 🎉 Session Summary & Validation (5 minutes)
+
+### ✅ What You've Accomplished with GitHub Copilot
+
+**✅ Exception Handling**: Custom exceptions with AI-generated patterns  
+**✅ Service Layer**: Comprehensive business logic using Copilot completions  
+**✅ Data Validation**: AI-assisted validation rules and error handling  
+**✅ Sample Data**: Realistic test data generated by Copilot  
+**✅ Unit Tests**: AI-generated test cases with proper assertions  
+**✅ Copilot Skills**: Intermediate pattern recognition and code completion
+
+### 🤖 Copilot Techniques Mastered
+
+- **Pattern-based code generation** for service layers
+- **Context-aware completions** using existing code structure  
+- **AI-generated realistic content** for test data
+- **Test case automation** with proper mocking
+- **Validation logic patterns** for business rules
+
+### 🚀 Quick Validation Test
+
+Run your enhanced application:
+
+```bash
+mvn clean compile
+mvn spring-boot:run
+```
+
+**Expected outcomes**:
+
+- Application starts without errors
+- Sample data appears in H2 database
+- Services are properly wired and functional
+- Unit tests pass with `mvn test`
+
+### 📚 Next Session Preview
+
+**Day 2 - Session 1** will focus on **REST APIs and Controllers** with advanced Copilot chat interface techniques including:
+
+- Agent usage (`@workspace`, `@terminal`)
+- Interactive API development
+- Advanced model selection for different tasks
+
+> 🎯 **Copilot Progress**: You've completed **Intermediate Techniques** - ready for **Day 2: Chat Interface & Agent Usage**!
 
 **Expected file**: `src/main/java/com/expensetracker/app/DataSeeder.java`
 

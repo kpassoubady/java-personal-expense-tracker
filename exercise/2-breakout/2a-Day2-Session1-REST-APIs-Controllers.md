@@ -1,33 +1,79 @@
-# 🎨 Day 2 - Session 1: Personal Expense Tracker - REST APIs & Controllers (30 mins)
+# 🎨 Day 2 - Session 1: Personal Expense Tracker - REST APIs & Controllers (45 mins)
 
 ## 🎯 Learning Objectives
 
 By the end of this session, you will:
 
-- Create REST API controllers for Category and Expense operations
-- Implement proper HTTP status codes and JSON responses
-- Add request validation and error handling
-- Test APIs with realistic data
-- Understand REST API best practices
+- Create REST API controllers using **GitHub Copilot Chat Interface**
+- Master **agent usage** (`@workspace`, `@terminal`, `@git`) for context-aware development
+- Implement proper HTTP status codes with **AI-assisted API patterns**
+- Practice **intermediate-to-advanced GitHub Copilot techniques** from the [Copilot Mastery Guide](../0-copilot-mastery-guide.md)
+- Add request validation with **Copilot's annotation suggestions**
+- Test APIs using **terminal-integrated Copilot features**
 
-**⏱️ Time Allocation: 30 minutes (with Q&A buffer)**
+**⏱️ Time Allocation: 45 minutes (Extended for comprehensive Chat Interface mastery)**
+
+---
+
+## 🤖 GitHub Copilot Chat Interface - Session Focus
+
+This session emphasizes **Day 2 Advanced Techniques**:
+
+### 🎯 Skills You'll Master
+
+- **Chat Interface Usage**: Interactive development with Copilot Chat
+- **Agent Integration**: `@workspace` for project context, `@terminal` for command help
+- **Contextual Prompting**: Using existing code for better API suggestions
+- **Real-time Testing**: Terminal integration with Copilot assistance
+- **API Pattern Recognition**: RESTful controller patterns with AI
+
+### 🔧 Key Copilot Chat Features for This Session
+
+- **`@workspace`**: Analyze entire project for consistent API patterns
+- **`@terminal`**: Get command suggestions for testing APIs
+- **Interactive refinement**: Iterative improvement of generated APIs
+- **Code explanation**: Understanding generated REST patterns
+- **Multi-file coordination**: Consistent controller patterns across files
+
+### 💡 Model Selection Strategy
+
+For this session, optimal models:
+
+- **Claude Sonnet 3.5**: Excellent for REST API patterns and explanations
+- **GPT-4.1**: Strong architectural suggestions and best practices
+- **GPT-4o**: Good balance of speed and API pattern recognition
+
+> 📖 **Reference**: See [Section 3: Chat Interface Mastery](../0-copilot-mastery-guide.md#section-3-chat-interface-mastery) for detailed techniques
 
 ---
 
 ## 📋 Prerequisites Check (2 minutes)
 
+---
+
+## 📋 Prerequisites Check (3 minutes)
+
 - ✅ Day 1 Sessions completed (entities, repositories, services)
-- ✅ Application starts successfully with sample data
+- ✅ Application starts successfully with sample data  
 - ✅ Services work correctly (tested in previous session)
 - ✅ H2 database contains categories and expenses
+- ✅ **Copilot Chat panel accessible** (`Ctrl/Cmd + Shift + I`)
 
-**Quick Test**: Verify your backend is ready:
+### 🤖 Copilot Chat Warm-up Exercise
 
-```bash
+Open Copilot Chat and try these commands:
+
+1. **`@workspace What REST controllers exist in this project?`**
+2. **`@terminal How do I test REST APIs with curl?`**  
+3. **Verify Chat responses** are contextually aware
+
+**Quick Test**: Verify your backend foundation:
+
+```bash  
 # Start application
 mvn spring-boot:run
 
-# Check sample data exists
+# Check sample data exists  
 curl http://localhost:8080/h2-console
 ```
 
@@ -35,52 +81,99 @@ curl http://localhost:8080/h2-console
 
 ## 🚀 Session Overview
 
-In this session, you'll expose your business logic through REST APIs. We'll create controllers that return JSON data, handle HTTP requests properly, and provide a foundation for frontend integration.
+In this session, you'll expose your business logic through REST APIs using **Copilot Chat Interface** for interactive development. We'll create controllers with AI assistance, implement proper REST patterns, and test everything using terminal integration.
 
-### 🎯 What You'll Build (30 minutes)
+### 🎯 What You'll Build (45 minutes)
 
-- **Category REST Controller**: Full CRUD API with JSON responses
-- **Expense REST Controller**: Advanced querying and filtering APIs  
-- **Error Handling**: Proper HTTP status codes and error messages
-- **API Testing**: Verify all endpoints work correctly
+- **Category REST Controller**: Full CRUD API with **Chat-guided development**
+- **Expense REST Controller**: Advanced querying using **`@workspace` context**
+- **Error Handling**: Proper HTTP status codes with **AI pattern assistance**
+- **API Testing**: **Terminal-integrated testing** with Copilot command help
+
+### 🤖 Chat Interface Integration Milestones
+
+Each step demonstrates specific Chat techniques:
+
+1. **Contextual API Generation**: Using `@workspace` for consistent patterns
+2. **Interactive Refinement**: Iterative improvement through Chat
+3. **Terminal Integration**: API testing with `@terminal` assistance
+4. **Cross-file Coordination**: Maintaining consistency across controllers
 
 ---
 
-## 📝 Step 1: Create Category REST Controller (12 minutes)
+## 📝 Step 1: Create Category REST Controller with Chat Interface (15 minutes)
 
-### 🏷️ Category API Implementation
+### 🏷️ Category API Implementation - Interactive Development
 
-Create comprehensive REST API for categories:
+Create comprehensive REST API using Copilot Chat's interactive capabilities:
 
-**Copilot Prompt:**
+**🤖 Copilot Chat Exercise 1A: Contextual Analysis**
 
-```text
-/generate Create CategoryRestController in com.expensetracker.app.controller package with:
+1. **Open Copilot Chat** (`Ctrl/Cmd + Shift + I`)
 
-@RestController and @RequestMapping("/api/categories"):
+2. **Start with project context**:
 
-Basic CRUD operations:
-- GET /api/categories - return all categories with expense counts
-- GET /api/categories/{id} - return single category or 404 if not found
-- POST /api/categories - create new category with @Valid validation
-- PUT /api/categories/{id} - update category with validation
-- DELETE /api/categories/{id} - delete with safety check for existing expenses
+   ```text
+   @workspace Analyze the current project structure and suggest a REST controller pattern for Category management that follows Spring Boot best practices
+   ```
+
+3. **Follow up with specific request**:
+
+   ```text
+   Generate a CategoryController in com.expensetracker.app.controller package with:
+   - Full CRUD operations
+   - Proper HTTP status codes  
+   - JSON responses
+   - Integration with CategoryService
+   - Request validation with @Valid
+   ```
+
+**🤖 Copilot Chat Exercise 1B: Interactive Implementation**
+
+4. **Create the controller file** and let Chat guide the implementation:
+
+   ```java
+   package com.expensetracker.app.controller;
+   
+   // Ask Chat: "Complete this REST controller with all necessary imports and annotations"
+   ```
+
+5. **Use Chat for method-by-method guidance**:
+
+   ```text
+   Add a GET endpoint for retrieving all categories with proper response formatting
+   ```
+
+6. **Iterate and refine** through Chat conversation:
+
+   ```text
+   Improve the POST endpoint to include proper validation error handling
+   ```
+
+**🎯 Expected Chat Interaction Pattern**:
+
+- Chat should provide **contextual suggestions** based on your existing services
+- **Incremental refinement** through conversation
+- **Best practice recommendations** for REST API design
+- **Code explanations** for complex patterns
 
 Additional endpoints:
+
 - GET /api/categories/search?name={name} - search categories by name
 - GET /api/categories/stats - return category statistics
 
 Response format:
+
 - Success responses: {"success": true, "data": {...}, "message": "..."}
 - Error responses: {"success": false, "error": "...", "message": "..."}
 
 Include:
+
 - @CrossOrigin for frontend integration
 - Proper HTTP status codes (200, 201, 400, 404, 409)
 - Exception handling with try-catch blocks
 - Validation error handling
 - Integration with CategoryService
-```
 
 **Expected file**: `src/main/java/com/expensetracker/app/controller/CategoryRestController.java`
 
@@ -308,6 +401,7 @@ By the end of this session, you should have:
 ## 🎯 What's Next?
 
 **Coming in Session 2**: Web Interface & Templates
+
 - Create Thymeleaf templates for category and expense management
 - Build responsive web forms with Bootstrap
 - Add dashboard with charts and analytics

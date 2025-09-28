@@ -1,16 +1,51 @@
-# 🧪 Day 3 - Session 1: Personal Expense Tracker - Comprehensive Testing (30 mins)
+# 🧪 Day 3 - Session 1: Personal Expense Tracker - Comprehensive Testing (45 mins)
 
 ## 🎯 Learning Objectives
 
 By the end of this session, you will:
 
-- Create comprehensive unit tests for service layer components
-- Implement integration tests using @DataJpaTest for repositories
-- Build web layer tests with MockMvc for controller testing
-- Set up test data management and cleanup strategies  
-- Achieve high code coverage with meaningful tests
+- Create comprehensive unit tests using **GitHub Copilot's test generation**
+- Master **professional testing patterns** with AI-guided implementation
+- Practice **advanced agent usage** (`@workspace`, `@git`, `@terminal`) for testing workflows
+- Implement integration tests with **Copilot's testing framework suggestions**
+- Apply **Day 3 Professional Techniques** from the [Copilot Mastery Guide](../0-copilot-mastery-guide.md)
+- Set up test data management with **AI-generated realistic fixtures**
 
-**⏱️ Time Allocation: 30 minutes (with Q&A buffer)**
+**⏱️ Time Allocation: 45 minutes (Extended for comprehensive testing mastery)**
+
+---
+
+## 🤖 GitHub Copilot Professional Testing Integration
+
+This session emphasizes **Day 3 Professional Techniques**:
+
+### 🎯 Skills You'll Master
+
+- **Test Generation**: Automated test case creation with comprehensive coverage
+- **Mock Pattern Recognition**: Professional mocking strategies with Mockito
+- **Test Data Creation**: Realistic fixtures and edge cases
+- **Custom Instructions**: Personalized testing patterns and conventions
+- **Professional Workflows**: Testing best practices and CI/CD preparation
+
+### 🔧 Advanced Copilot Testing Features
+
+- **Test method generation** from existing service methods
+- **Mock object creation** with proper verification patterns  
+- **Edge case identification** and test scenario creation
+- **Test data builders** for complex object creation
+- **Integration test patterns** for Spring Boot applications
+
+### 💡 Model Selection for Testing
+
+- **Claude Sonnet 3.7**: Superior test logic and edge case identification
+- **GPT-4.1**: Excellent for complex testing patterns and frameworks
+- **GPT-5 Preview**: Advanced reasoning for test scenario coverage
+
+### 🎯 Custom Instructions Integration
+
+This session will demonstrate creating **personal testing conventions** that enhance Copilot's testing suggestions for your specific coding style.
+
+> 📖 **Reference**: See [Section 5: Professional Testing Mastery](../0-copilot-mastery-guide.md#section-5-professional-testing)
 
 ---
 
@@ -374,6 +409,7 @@ By the end of this session, you should have:
 ## 🎯 What's Next?
 
 **Coming in Session 2**: UI Automation & TestNG Integration
+
 - Selenium WebDriver automation tests
 - TestNG framework configuration
 - Page Object Model implementation

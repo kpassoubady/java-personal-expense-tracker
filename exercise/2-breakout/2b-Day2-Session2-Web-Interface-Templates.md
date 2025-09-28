@@ -1,16 +1,47 @@
-# 🎨 Day 2 - Session 2: Personal Expense Tracker - Web Interface & Templates (30 mins)
+# 🎨 Day 2 - Session 2: Personal Expense Tracker - Web Interface & Templates (45 mins)
 
 ## 🎯 Learning Objectives
 
 By the end of this session, you will:
 
-- Create responsive Thymeleaf templates with Bootstrap styling
-- Build web controllers for page rendering and form handling
-- Implement dashboard with charts and analytics visualization
-- Add dynamic AJAX functionality for better user experience
-- Create a complete, professional web application
+- Create responsive Thymeleaf templates using **GitHub Copilot's frontend generation**
+- Build web controllers with **Chat-guided MVC patterns**
+- Practice **agent usage** for coordinated frontend-backend development
+- Implement dashboard with **AI-generated charts and analytics**
+- Master **advanced GitHub Copilot techniques** from the [Copilot Mastery Guide](../0-copilot-mastery-guide.md)
+- Add dynamic functionality using **Copilot's JavaScript suggestions**
 
-**⏱️ Time Allocation: 30 minutes (with Q&A buffer)**
+**⏱️ Time Allocation: 45 minutes (Extended for comprehensive frontend AI integration)**
+
+---
+
+## 🤖 GitHub Copilot Advanced Frontend Integration
+
+This session emphasizes **Day 2 Professional Techniques**:
+
+### 🎯 Skills You'll Master
+
+- **Frontend Pattern Recognition**: HTML, CSS, JavaScript generation with context
+- **Multi-language Coordination**: Java controllers + HTML templates + JavaScript
+- **Agent-Driven Development**: `@workspace` for consistent UI patterns
+- **Template Generation**: Thymeleaf syntax with Bootstrap integration
+- **Interactive Enhancement**: AJAX patterns with AI assistance
+
+### 🔧 Key Copilot Features for Frontend Development
+
+- **Template completion**: HTML structure with Thymeleaf expressions
+- **Bootstrap integration**: Professional responsive components
+- **JavaScript enhancement**: Dynamic functionality suggestions
+- **CSS styling**: Modern, clean design patterns
+- **Form handling**: Validation and submission patterns
+
+### 💡 Optimal Models for Frontend Work
+
+- **GPT-4.1**: Excellent for complex template structures and JavaScript
+- **Claude Sonnet 3.5**: Superior HTML/CSS pattern recognition
+- **Gemini 2.5 Pro**: Strong multi-language coordination
+
+> 📖 **Reference**: See [Section 4: Professional Frontend Integration](../0-copilot-mastery-guide.md#section-4-professional-integration)
 
 ---
 
@@ -389,6 +420,7 @@ By the end of this session, you should have:
 ## 🎯 What's Next?
 
 **Coming in Day 3 Session 1**: Comprehensive Testing
+
 - Unit tests for all components
 - Integration tests for web layer
 - Repository tests with @DataJpaTest  
@@ -441,7 +473,7 @@ By the end of this session, you should have:
 
 ---
 
-## 🎊 Day 2 Complete - Major Milestone! 
+## 🎊 Day 2 Complete - Major Milestone
 
 **What You've Built:**
 

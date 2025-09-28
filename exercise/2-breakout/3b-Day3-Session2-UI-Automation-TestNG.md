@@ -1,16 +1,50 @@
-# 🧪 Day 3 - Session 2: Personal Expense Tracker - UI Automation & TestNG (30 mins)
+# 🧪 Day 3 - Session 2: Personal Expense Tracker - UI Automation & Enterprise Testing (45 mins)
 
-## 🎯 Learning Objectives
+## 🎯 Learning Objectives - Complete Copilot Mastery
 
 By the end of this session, you will:
 
-- Set up Selenium WebDriver for browser automation testing
-- Configure TestNG framework for organized test execution  
-- Implement Page Object Model for maintainable UI tests
-- Create end-to-end user workflow tests
-- Integrate UI tests with existing test suite
+- Set up Selenium WebDriver using **GitHub Copilot's automation patterns**
+- Master **custom instructions** for personalized testing conventions
+- Configure TestNG with **AI-generated test organization patterns**
+- Complete your journey to **GitHub Copilot Professional Mastery**
+- Implement **enterprise-grade testing** with advanced AI assistance
+- Create **portfolio-quality code** demonstrating professional AI-assisted development
 
-**⏱️ Time Allocation: 30 minutes (with Q&A buffer)**
+**⏱️ Time Allocation: 45 minutes (Final comprehensive Copilot integration)**
+
+---
+
+## 🎓 GitHub Copilot Mastery Completion
+
+This session represents **the culmination of your Copilot journey**:
+
+### 🏆 Professional Skills You'll Complete
+
+- **Custom Instructions**: Creating personalized AI assistance patterns
+- **Advanced Agent Usage**: Complex multi-agent coordination
+- **Enterprise Testing**: Production-ready automation with AI
+- **Model Optimization**: Selecting optimal AI models for different tasks
+- **Workflow Integration**: AI-assisted development lifecycle
+
+### 🚀 Advanced Copilot Features - Final Integration
+
+- **Custom testing conventions** with personalized instructions
+- **Advanced terminal integration** for automation setup
+- **Multi-file coordination** for complex test suites
+- **Professional documentation** generation
+- **CI/CD preparation** with AI assistance
+
+### 🎯 Custom Instructions Workshop
+
+This session includes creating **your own custom instructions** for:
+
+- **Testing conventions** specific to your coding style
+- **Code generation preferences** that match your architecture
+- **Documentation standards** for professional projects
+- **Error handling patterns** that suit your development approach
+
+> 📖 **Reference**: See [Section 6: Custom Instructions & Professional Workflows](../0-copilot-mastery-guide.md#section-6-custom-instructions--professional-workflows)
 
 ---
 
@@ -531,6 +565,7 @@ By the end of this session, you should have:
    **A**: Follow the patterns established, maintain test coverage, use version control effectively
 
 **🎯 Next Learning Steps:**
+
 - Explore Spring Security for authentication
 - Learn Docker and Kubernetes for deployment  
 - Add CI/CD pipelines with GitHub Actions
