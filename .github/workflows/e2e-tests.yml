@@ -21,7 +21,7 @@ on:
       headless:
         description: 'Run in headless mode'
         required: true
-        default: 'true'
+        default: true
         type: boolean
       environment:
         description: 'Test environment'
@@ -165,8 +165,8 @@ jobs:
       with:
         status: failure
         text: "E2E Tests failed for ${{ github.repository }} on branch ${{ github.ref_name }}"
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-    
+
+
     - name: Send Email Notification
       if: failure()
       uses: dawidd6/action-send-mail@v3
