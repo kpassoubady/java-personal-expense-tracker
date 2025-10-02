@@ -42,46 +42,107 @@ public class DashboardRestController {
     public ResponseEntity<Map<String, Object>> refreshDashboard() {
         try {
             logger.info("Refreshing dashboard data...");
-
-            Map<String, Object> dashboardData = new HashMap<>();
             
-            // Get basic statistics
-            dashboardData.put("totalExpenses", expenseService.getTotalExpenses());
-            dashboardData.put("expenseCount", expenseService.getExpenseCount());
-            dashboardData.put("categoryCount", categoryService.getAllCategories().size());
-            
-            // Get recent activities
-            dashboardData.put("recentExpenses", expenseService.getRecentExpenses(5));
-            dashboardData.put("categorySummary", expenseService.getExpenseSummaryByCategory());
-            dashboardData.put("monthlyTrends", expenseService.getMonthlyExpenseSummary());
-            
-            // Get monthly totals
-            LocalDate now = LocalDate.now();
-            LocalDate startOfMonth = now.withDayOfMonth(1);
-            LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
-            LocalDate startOfPrevMonth = now.minusMonths(1).withDayOfMonth(1);
-            LocalDate endOfPrevMonth = now.minusMonths(1).withDayOfMonth(now.minusMonths(1).lengthOfMonth());
-            
-            dashboardData.put("currentMonthTotal", expenseService.getTotalByDateRange(startOfMonth, endOfMonth));
-            dashboardData.put("previousMonthTotal", expenseService.getTotalByDateRange(startOfPrevMonth, endOfPrevMonth));
-            
-            // Add metadata
-            dashboardData.put("lastUpdated", LocalDateTime.now());
-            dashboardData.put("status", "success");
+            Map<String, Object> dashboardData = buildDashboardData();
+            addMetadata(dashboardData, "success");
             
             logger.info("Dashboard data refreshed successfully");
-            
             return ResponseEntity.ok(dashboardData);
+            
         } catch (Exception e) {
             logger.error("Error refreshing dashboard data", e);
-            
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to refresh dashboard data");
-            errorResponse.put("error", e.getMessage());
-            errorResponse.put("timestamp", LocalDateTime.now());
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return buildErrorResponse("Failed to refresh dashboard data", e);
+        }
+    }
+    
+    /**
+     * Build complete dashboard data map with statistics and trends.
+     *
+     * @return Map containing all dashboard data
+     */
+    private Map<String, Object> buildDashboardData() {
+        Map<String, Object> data = new HashMap<>();
+        
+        // Basic statistics
+        data.put("totalExpenses", expenseService.getTotalExpenses());
+        data.put("expenseCount", expenseService.getExpenseCount());
+        data.put("categoryCount", categoryService.getAllCategories().size());
+        
+        // Activity data
+        data.put("recentExpenses", expenseService.getRecentExpenses(5));
+        data.put("categorySummary", expenseService.getExpenseSummaryByCategory());
+        data.put("monthlyTrends", expenseService.getMonthlyExpenseSummary());
+        
+        // Monthly totals
+        data.putAll(calculateMonthlyTotals());
+        
+        return data;
+    }
+    
+    /**
+     * Calculate current and previous month expense totals.
+     *
+     * @return Map containing current and previous month totals
+     */
+    private Map<String, Object> calculateMonthlyTotals() {
+        MonthlyDateRanges ranges = new MonthlyDateRanges();
+        
+        return Map.of(
+            "currentMonthTotal", expenseService.getTotalByDateRange(ranges.currentStart(), ranges.currentEnd()),
+            "previousMonthTotal", expenseService.getTotalByDateRange(ranges.previousStart(), ranges.previousEnd())
+        );
+    }
+    
+    /**
+     * Add metadata fields to response map.
+     *
+     * @param data response map to add metadata to
+     * @param status status value (success/error)
+     */
+    private void addMetadata(Map<String, Object> data, String status) {
+        data.put("lastUpdated", LocalDateTime.now());
+        data.put("status", status);
+    }
+    
+    /**
+     * Build consistent error response structure.
+     *
+     * @param message user-friendly error message
+     * @param e exception that occurred
+     * @return ResponseEntity with error details
+     */
+    private ResponseEntity<Map<String, Object>> buildErrorResponse(String message, Exception e) {
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", message);
+        errorResponse.put("error", e.getMessage());
+        errorResponse.put("timestamp", LocalDateTime.now());
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+    
+    /**
+     * Helper record for calculating monthly date ranges.
+     * Encapsulates logic for current and previous month date calculations.
+     */
+    private record MonthlyDateRanges() {
+        private static final LocalDate NOW = LocalDate.now();
+        
+        public LocalDate currentStart() { 
+            return NOW.withDayOfMonth(1); 
+        }
+        
+        public LocalDate currentEnd() { 
+            return NOW.withDayOfMonth(NOW.lengthOfMonth()); 
+        }
+        
+        public LocalDate previousStart() { 
+            return NOW.minusMonths(1).withDayOfMonth(1); 
+        }
+        
+        public LocalDate previousEnd() { 
+            LocalDate prevMonth = NOW.minusMonths(1);
+            return prevMonth.withDayOfMonth(prevMonth.lengthOfMonth()); 
         }
     }
 
@@ -97,19 +158,12 @@ public class DashboardRestController {
 
             Map<String, Object> response = new HashMap<>();
             response.put("categorySummary", expenseService.getExpenseSummaryByCategory());
-            response.put("lastUpdated", LocalDateTime.now());
-            response.put("status", "success");
+            addMetadata(response, "success");
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error fetching category statistics", e);
-            
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to fetch category statistics");
-            errorResponse.put("error", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return buildErrorResponse("Failed to fetch category statistics", e);
         }
     }
 
@@ -124,30 +178,14 @@ public class DashboardRestController {
             logger.info("Fetching monthly trends...");
 
             Map<String, Object> response = new HashMap<>();
-            
-            // Calculate monthly totals
-            LocalDate now = LocalDate.now();
-            LocalDate startOfMonth = now.withDayOfMonth(1);
-            LocalDate endOfMonth = now.withDayOfMonth(now.lengthOfMonth());
-            LocalDate startOfPrevMonth = now.minusMonths(1).withDayOfMonth(1);
-            LocalDate endOfPrevMonth = now.minusMonths(1).withDayOfMonth(now.minusMonths(1).lengthOfMonth());
-            
-            response.put("currentMonthTotal", expenseService.getTotalByDateRange(startOfMonth, endOfMonth));
-            response.put("previousMonthTotal", expenseService.getTotalByDateRange(startOfPrevMonth, endOfPrevMonth));
+            response.putAll(calculateMonthlyTotals());
             response.put("monthlyTrends", expenseService.getMonthlyExpenseSummary());
-            response.put("lastUpdated", LocalDateTime.now());
-            response.put("status", "success");
+            addMetadata(response, "success");
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error fetching monthly trends", e);
-            
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to fetch monthly trends");
-            errorResponse.put("error", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return buildErrorResponse("Failed to fetch monthly trends", e);
         }
     }
 
@@ -165,19 +203,12 @@ public class DashboardRestController {
             summary.put("totalExpenses", expenseService.getTotalExpenses());
             summary.put("expenseCount", expenseService.getExpenseCount());
             summary.put("categoryCount", categoryService.getAllCategories().size());
-            summary.put("lastUpdated", LocalDateTime.now());
-            summary.put("status", "success");
+            addMetadata(summary, "success");
             
             return ResponseEntity.ok(summary);
         } catch (Exception e) {
             logger.error("Error fetching dashboard summary", e);
-            
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to fetch dashboard summary");
-            errorResponse.put("error", e.getMessage());
-            
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return buildErrorResponse("Failed to fetch dashboard summary", e);
         }
     }
 }
